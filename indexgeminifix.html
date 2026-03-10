@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSV Quiz — Trafikkregler for jernbanenettet</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   CSS VARIABLES & RESET
+   ═══════════════════════════════════════════ */
+:root {
+  --bane-blue: #00458a;
+  --bane-blue-dark: #001a38;
+  --bane-blue-light: #0065ca;
+  --bane-yellow: #f5c518;
+  --bane-yellow-soft: #fde68a;
+  --bane-white: #ffffff;
+  --bane-gray: #e8ecf0;
+  --bane-gray-dark: #8a9bb0;
+  --bane-success: #22c55e;
+  --bane-error: #ef4444;
+  --bane-surface: #f0f4f8;
+  --bane-card: #ffffff;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 24px rgba(0, 40, 80, 0.08);
+  --shadow-lg: 0 12px 48px rgba(0, 40, 80, 0.15);
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bane-surface);
+  color: var(--bane-blue);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════
+   HEADER
+   ═══════════════════════════════════════════ */
+.header {
+  background: var(--bane-blue);
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+}
+
+.header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo-icon {
+  width: 44px;
+  height: 44px;
+  background: var(--bane-yellow);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--bane-blue);
+  flex-shrink: 0;
+}
+
+.logo-text {
+  color: var(--bane-white);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.logo-text span {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--bane-yellow-soft);
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.header-badge {
+  background: rgba(255,255,255,0.1);
+  color: var(--bane-yellow);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(245, 197, 24, 0.25);
+  letter-spacing: 0.5px;
+}
+
+/* ═══════════════════════════════════════════
+   MAIN CONTAINER
+   ═══════════════════════════════════════════ */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+
+/* ═══════════════════════════════════════════
+   START SCREEN
+   ═══════════════════════════════════════════ */
+.start-screen {
+  animation: fadeUp 0.5s ease-out;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.hero h1 {
+  font-size: clamp(26px, 4vw, 36px);
+  font-weight: 700;
+  color: var(--bane-blue);
+  margin-bottom: 10px;
+}
+
+.hero p {
+  font-size: 16px;
+  color: var(--bane-gray-dark);
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* TABS */
+.tabs-header {
+  display: flex;
+  gap: 4px;
+  background: var(--bane-blue);
+  border-radius: var(--radius) var(--radius) 0 0;
+  padding: 6px 6px 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabs-header::-webkit-scrollbar { display: none; }
+
+.tab-btn {
+  flex-shrink: 0;
+  padding: 12px 20px;
+  background: transparent;
+  color: rgba(255,255,255,0.6);
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.tab-btn:hover {
+  color: var(--bane-white);
+  background: rgba(255,255,255,0.08);
+}
+
+.tab-btn.active {
+  color: var(--bane-blue);
+  background: var(--bane-card);
+}
+
+.tab-content {
+  background: var(--bane-card);
+  border-radius: 0 0 var(--radius) var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px;
+}
+
+.chapter-card {
+  display: none;
+}
+
+.chapter-card.active {
+  display: block;
+  animation: fadeUp 0.3s ease-out;
+}
+
+.chapter-info h2 {
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+
+.chapter-info .subtitle {
+  color: var(--bane-gray-dark);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.chapter-info .stat-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  background: var(--bane-surface);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  flex: 1;
+  min-width: 140px;
+}
+
+.stat .label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--bane-gray-dark);
+  margin-bottom: 4px;
+}
+
+.stat .value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--bane-blue);
+}
+
+.topic-list {
+  list-style: none;
+  margin-bottom: 24px;
+}
+
+.topic-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--bane-gray);
+  font-size: 14px;
+  color: #4a5e75;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topic-list li::before {
+  content: '▸';
+  color: var(--bane-yellow);
+  font-weight: 700;
+}
+
+.btn-start {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 36px;
+  background: var(--bane-blue);
+  color: var(--bane-white);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-start:hover {
+  background: var(--bane-blue-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.btn-start.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════
+   MODAL OVERLAY
+   ═══════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background: var(--bane-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .modal-content {
+  transform: scale(1);
+}
+
+.modal-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.modal-header {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--bane-blue);
+  margin-bottom: 16px;
+}
+
+.modal-text {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--bane-gray-dark);
+  margin-bottom: 24px;
+}
+
+.modal-btn {
+  padding: 14px 36px;
+  background: var(--bane-blue);
+  color: var(--bane-white);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.modal-btn:hover {
+  background: var(--bane-blue-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+/* ═══════════════════════════════════════════
+   QUIZ SCREEN
+   ═══════════════════════════════════════════ */
+.quiz-screen {
+  display: none;
+  animation: fadeUp 0.4s ease-out;
+}
+
+.quiz-screen.active {
+  display: block;
+}
+
+.progress-area {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.progress-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--bane-blue);
+}
+
+.progress-score {
+  font-size: 13px;
+  color: var(--bane-gray-dark);
+  font-weight: 500;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--bane-gray);
+  border-radius: 3px;
+  margin-bottom: 28px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--bane-yellow);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+
+.question-card {
+  background: var(--bane-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 32px;
+  margin-bottom: 20px;
+}
+
+.question-number {
+  display: inline-block;
+  background: var(--bane-blue);
+  color: var(--bane-yellow);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  letter-spacing: 0.5px;
+}
+
+.question-text {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.55;
+  color: var(--bane-blue);
+  margin-bottom: 20px;
+}
+
+.question-image {
+  width: auto;
+  max-width: 280px;
+  max-height: 240px;
+  object-fit: contain;
+  margin: 0 auto 24px;
+  display: block;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--bane-gray);
+  background: var(--bane-surface);
+  padding: 12px;
+}
+
+.question-image-caption {
+  text-align: center;
+  font-size: 12px;
+  color: var(--bane-gray-dark);
+  margin-top: -16px;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 20px;
+  background: var(--bane-surface);
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--bane-blue);
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition);
+  line-height: 1.5;
+}
+
+.option-btn:hover:not(.locked) {
+  border-color: var(--bane-blue);
+  background: #eef3f9;
+}
+
+.option-letter {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bane-card);
+  border: 2px solid var(--bane-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  transition: var(--transition);
+}
+
+.option-btn.correct {
+  border-color: var(--bane-success);
+  background: #f0fdf4;
+}
+
+.option-btn.correct .option-letter {
+  background: var(--bane-success);
+  border-color: var(--bane-success);
+  color: white;
+}
+
+.option-btn.wrong {
+  border-color: var(--bane-error);
+  background: #fef2f2;
+}
+
+.option-btn.wrong .option-letter {
+  background: var(--bane-error);
+  border-color: var(--bane-error);
+  color: white;
+}
+
+.option-btn.locked {
+  cursor: default;
+  opacity: 0.65;
+}
+
+.option-btn.correct.locked,
+.option-btn.wrong.locked {
+  opacity: 1;
+}
+
+.explanation {
+  display: none;
+  margin-top: 20px;
+  padding: 16px 20px;
+  background: #fffbeb;
+  border-left: 4px solid var(--bane-yellow);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #78350f;
+}
+
+.explanation.show {
+  display: block;
+  animation: fadeUp 0.3s ease-out;
+}
+
+.explanation strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--bane-blue-dark);
+}
+
+.quiz-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-next {
+  display: none;
+  margin-left: auto;
+  padding: 12px 28px;
+  background: var(--bane-blue);
+  color: var(--bane-white);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-next:hover {
+  background: var(--bane-blue-light);
+}
+
+.btn-next.show {
+  display: inline-flex;
+}
+
+.btn-quit {
+  padding: 12px 20px;
+  background: transparent;
+  color: var(--bane-gray-dark);
+  border: 1px solid var(--bane-gray);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-quit:hover {
+  background: var(--bane-surface);
+  color: var(--bane-error);
+  border-color: var(--bane-error);
+}
+
+/* ═══════════════════════════════════════════
+   RESULT SCREEN
+   ═══════════════════════════════════════════ */
+.result-screen {
+  display: none;
+  animation: fadeUp 0.5s ease-out;
+}
+
+.result-screen.active {
+  display: block;
+}
+
+.result-card {
+  background: var(--bane-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 48px 36px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.result-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  margin: 0 auto 20px;
+}
+
+.result-icon.pass {
+  background: #dcfce7;
+  color: var(--bane-success);
+}
+
+.result-icon.fail {
+  background: #fee2e2;
+  color: var(--bane-error);
+}
+
+.result-card h2 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.result-card .result-sub {
+  font-size: 16px;
+  color: var(--bane-gray-dark);
+  margin-bottom: 28px;
+}
+
+.score-display {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.score-item {
+  text-align: center;
+}
+
+.score-item .num {
+  font-size: 40px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.score-item .num.green { color: var(--bane-success); }
+.score-item .num.red { color: var(--bane-error); }
+.score-item .num.blue { color: var(--bane-blue); }
+
+.score-item .lbl {
+  font-size: 13px;
+  color: var(--bane-gray-dark);
+  margin-top: 4px;
+}
+
+.percent-bar {
+  width: 100%;
+  max-width: 400px;
+  height: 12px;
+  background: var(--bane-gray);
+  border-radius: 6px;
+  margin: 0 auto 12px;
+  overflow: hidden;
+}
+
+.percent-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 1s ease;
+}
+
+.percent-fill.pass { background: var(--bane-success); }
+.percent-fill.fail { background: var(--bane-error); }
+
+.percent-text {
+  font-size: 14px;
+  color: var(--bane-gray-dark);
+  margin-bottom: 28px;
+}
+
+.result-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-review {
+  padding: 12px 24px;
+  background: var(--bane-surface);
+  color: var(--bane-blue);
+  border: 2px solid var(--bane-gray);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-review:hover {
+  border-color: var(--bane-blue);
+}
+
+/* ═══════════════════════════════════════════
+   REVIEW SCREEN
+   ═══════════════════════════════════════════ */
+.review-screen {
+  display: none;
+  animation: fadeUp 0.4s ease-out;
+}
+
+.review-screen.active {
+  display: block;
+}
+
+.review-item {
+  background: var(--bane-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  margin-bottom: 16px;
+  border-left: 4px solid transparent;
+}
+
+.review-item.was-correct {
+  border-left-color: var(--bane-success);
+}
+
+.review-item.was-wrong {
+  border-left-color: var(--bane-error);
+}
+
+.review-item .ri-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.review-item .ri-q {
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.review-item .ri-answer {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #4a5e75;
+}
+
+.review-item .ri-answer strong {
+  color: var(--bane-blue);
+}
+
+.badge-correct, .badge-wrong {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.badge-correct {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge-wrong {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ═══════════════════════════════════════════
+   FOOTER NOTE
+   ═══════════════════════════════════════════ */
+.footer-note {
+  text-align: center;
+  font-size: 12px;
+  color: var(--bane-gray-dark);
+  padding: 40px 20px 20px;
+  line-height: 1.6;
+}
+
+.footer-note a {
+  color: var(--bane-blue-light);
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .header-inner { padding: 12px 16px; }
+  .header-badge { display: none; }
+  .container { padding: 20px 12px 60px; }
+  .question-card { padding: 20px; }
+  .tab-btn { padding: 10px 14px; font-size: 13px; }
+  .tab-content { padding: 20px; }
+  .result-card { padding: 32px 20px; }
+  .score-display { gap: 20px; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo-area">
+      <div class="logo-icon">TJN</div>
+      <div class="logo-text">
+        HSV Quiz
+        <span>Trafikkregler for jernbanenettet</span>
+      </div>
+    </div>
+    <div class="header-badge">orv.banenor.no</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <div id="startScreen" class="start-screen">
+    <div class="hero">
+      <h1>Velg kapittel og start quiz</h1>
+      <p>Test deg selv på trafikkreglene for jernbanenettet. Velg et kapittel nedenfor for å starte en prøve med 40 spørsmål.</p>
+    </div>
+
+    <div class="tabs-header" id="tabsHeader"></div>
+    <div class="tab-content" id="tabContent"></div>
+  </div>
+
+  <div id="quizScreen" class="quiz-screen">
+    <div class="progress-area">
+      <span class="progress-text" id="progressText">Spørsmål 1 av 40</span>
+      <span class="progress-score" id="progressScore">0 riktige</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="question-card" id="questionCard">
+      <span class="question-number" id="qNumber">SPØRSMÅL 1</span>
+      <p class="question-text" id="qText"></p>
+      <div id="qImageWrap"></div>
+      <div class="options" id="optionsContainer"></div>
+      <div class="explanation" id="explanation"></div>
+    </div>
+
+    <div class="quiz-nav">
+      <button class="btn-quit" id="btnQuit">Avslutt quiz</button>
+      <button class="btn-next" id="btnNext">Neste spørsmål →</button>
+    </div>
+  </div>
+
+  <div id="resultScreen" class="result-screen"></div>
+
+  <div id="reviewScreen" class="review-screen"></div>
+
+</div>
+
+<!-- Initial Overlay Modal -->
+<div id="initialModal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-icon">⚠️</div>
+    <h2 class="modal-header">Viktig!</h2>
+    <p class="modal-text">
+      Denne quizen er ikke laget av BaneNOR eller Jernbaneskolen og skal kun brukes som øving i TILLEGG til ordinær opplæring for HSV. Alle gjeldende regler står inne på orv.banenor.no. Noen av spørsmålene og forklaringene KAN være feil, ettersom at nettsiden er under utvikling enda
+    </p>
+    <button id="modalButton" class="modal-btn">Jeg skjønner</button>
+  </div>
+</div>
+
+<div class="footer-note">
+  Kilde: <a href="https://orv.banenor.no/trafikkregler-for-jernbanenettet/" target="_blank" rel="noopener">Trafikkregler for jernbanenettet (TJN)</a> — Bane NOR, Operativt regelverk.<br>
+  Denne quizen er et pugge- og øvingsverktøy og erstatter ikke offisiell opplæring.
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   QUESTION DATABASE — Kapittel 8: Signaler og skilt
+   100 spørsmål. 40 trekkes tilfeldig hver gang.
+   ═══════════════════════════════════════════════════════════════ */
+
+const chapter8Questions = [
+  // ── GENERELLE BESTEMMELSER (8.1–8.9) ──
+  {id:"8-001", q:"Hva skal fører gjøre dersom det mottas signaler med ulik betydning?", img:null, options:["Følge det signalet som gir høyest hastighet","Følge det mest restriktive signalet","Stoppe umiddelbart og kontakte togleder før noe gjøres","Følge det sist mottatte signalet"], correct:1, explanation:"TJN 8.1 nr. 3: «Dersom det mottas signaler med ulik betydning, skal det mest restriktive signalet følges. Dersom det mottatte signalet er utydelig eller tvetydig, skal tog eller skift stoppe og undersøke forholdet.»"},
+  {id:"8-002", q:"Hva betyr den røde signalfargen i henhold til TJN?", img:null, options:["Varsom","Kjøretillatelse","Stopp","Klar linje"], correct:2, explanation:"TJN 8.2: Signalfargenes grunnbetydning: «Rødt betyr stopp.»"},
+  {id:"8-003", q:"Hva er grunnbetydningen av gul signalfarge?", img:null, options:["Stopp","Klar linje","Kjøretillatelse","Varsom"], correct:3, explanation:"TJN 8.2: Signalfargenes grunnbetydning: «Gult betyr varsom.»"},
+  {id:"8-004", q:"Hva er grunnbetydningen av grønn signalfarge?", img:null, options:["Varsom – kjør med redusert hastighet","Klar linje","Kjøretillatelse","Fri fart uten begrensninger"], correct:2, explanation:"TJN 8.2: Signalfargenes grunnbetydning: «Grønt betyr kjøretillatelse.»"},
+  {id:"8-005", q:"Hva er grunnbetydningen av hvit signalfarge?", img:null, options:["Kjøretillatelse","Varsom","Klar linje","Nødsignal"], correct:2, explanation:"TJN 8.2: Signalfargenes grunnbetydning: «Hvitt betyr klar linje.»"},
+  {id:"8-006", q:"Hva er grunnbetydningen av fiolett signalfarge?", img:null, options:["Tilhørende planovergangssignal viser stopp foran planovergangen","Sporsperren er lagt i sperrestilling","Kjøring med redusert hastighet","Dvergsignal er i forbudt stilling"], correct:0, explanation:"TJN 8.2: Signalfargenes grunnbetydning: «Fiolett betyr at tilhørende planovergangssignal viser stopp foran planovergangen.»"},
+  {id:"8-007", q:"Hva er et nødsignal i henhold til TJN 8.3?", img:null, options:["Ett langt støt i togfløyten i mer enn 5 sekunder","Rødt blinkende lys fra hovedsignal","Enhver bevegelse med signal hurtig fram og tilbake på tvers av sporet","Tre korte fløytesignaler etterfulgt av ett langt"], correct:2, explanation:"TJN 8.3: «Enhver bevegelse med signal hurtig fram og tilbake på tvers av sporet er et nødsignal og betyr stopp.»"},
+  {id:"8-008", q:"Hvor skal faste signaler som gjelder for en bestemt kjøreretning normalt plasseres?", img:null, options:["Til venstre i kjøreretningen","Over sporet, alltid på bro eller åk","Til høyre i kjøreretningen eller over sporet","Mellom sporene på dobbeltspor"], correct:2, explanation:"TJN 8.4 nr. 1: «Faste signaler som gjelder for en bestemt kjøreretning, er satt opp til høyre i kjøreretningen eller over sporet.»"},
+  {id:"8-009", q:"Et lyssignal som ikke er i bruk – hva skal gjøres med det?", img:null, options:["Det skal vise rødt fast lys","Det skal være slukket, tildekket eller vendt bort fra sporet","Det skal merkes med blått kryss","Det skal vise gult blinkende lys"], correct:1, explanation:"TJN 8.5 nr. 1: «Lyssignaler som ikke er i bruk skal være slukket, tildekket eller vendt bort fra sporet. Dette gjelder likevel ikke ved prøving av signaler.»"},
+  {id:"8-010", q:"Hva skal gjøres med et hovedsignal som ikke er i bruk?", img:null, options:["Det merkes med signal 62 «Ugyldighetsskilt»","Det merkes med et rødt kryss over signalhodet","Det kobles fra strømforsyningen og plomberes","Det fjernes fra masten innen 48 timer"], correct:0, explanation:"TJN 8.5 nr. 2: «Hovedsignal, forsignal, enkelt innkjørsignal og signal E35 «Stoppskilt» som ikke er i bruk, skal i tillegg merkes med signal 62 «Ugyldighetsskilt». Dette gjelder likevel ikke hovedsignal ved ubetjent stasjon eller ved blokkpost som er tatt ut av bruk.»"},
+  {id:"8-011", q:"Hva skal fører gjøre dersom et signal som ikke skal være slukket, er slukket?", img:null, options:["Kjøre forbi med halv linjehastighet","Kontakte togleder og avvente ordre via radio","Stoppe og undersøke forholdet, og varsle togleder","Kjøre forbi med forsiktig kjøring (maks 40 km/t)"], correct:2, explanation:"TJN 8.1 nr. 4: «Dersom et signal mangler, eller et signal som ikke skal være slukket, er slukket, skal tog eller skift stoppe og undersøke forholdet. Toglederen skal varsles.»"},
+  {id:"8-012", q:"Hva innebærer det at et håndsignal er «bevoktet»?", img:null, options:["En person viser signalet eller holder oppsyn med det fra umiddelbar nærhet","Signalet er låst fast med kjetting og hengelås","Signalet overvåkes av kamera og togleder","To personer står vakt ved signalet, én på hver side av sporet"], correct:0, explanation:"TJN 8.1 nr. 6: «Håndsignal er bevoktet når en person viser signalet eller holder oppsyn med det fra umiddelbar nærhet.»"},
+  {id:"8-013", q:"Hva gjelder «høyre» og «venstre» for signaler til og på tog?", img:null, options:["I forhold til togets kjøreretning","I forhold til kilometreringsretningen","I forhold til stasjonsområdets nord-sør-akse","I forhold til signalets plassering sett fra fronten"], correct:0, explanation:"TJN 8.1 nr. 9: «For signaler til og på tog gjelder betegnelsene «høyre» og «venstre» i forhold til togets kjøreretning.»"},
+  {id:"8-014", q:"Hva skjer automatisk med et hovedsignal på fjernstyrt strekning når toget passerer det?", img:null, options:["Signalet blinker gult i 10 sekunder og skifter deretter til rødt","Signalet omstilles automatisk til signal 20A eller 20B «Stopp»","Signalet slukkes midlertidig til neste togvei er sikret","Signalet må stilles tilbake til stopp manuelt"], correct:1, explanation:"TJN 8.9 nr. 1: «Når toget passerer et hovedsignal, midlertidig utkjørsignal eller midlertidig innkjørsignal, omstilles signalet automatisk til signal 20A eller 20B «Stopp».»"},
+  {id:"8-015", q:"Hvilke signaltyper regnes som hovedsignaler?", img:null, options:["Innkjørhovedsignal, forsignal, dvergsignal og enkelt innkjørsignal","Innkjørhovedsignal, utkjørhovedsignal, indre hovedsignal og blokksignal","Blokksignal, forsignal, planovergangssignal og linjesignal","Utkjørhovedsignal, togsporsignal, høyt skiftesignal og repetérsignal"], correct:1, explanation:"TJN 8.7 nr. 1: «Innkjørhovedsignal, utkjørhovedsignal, indre hovedsignal og blokksignal er hovedsignaler. Signalene brukes ikke på strekning med ERTMS.»"},
+
+  // ── INNKJØRHOVEDSIGNAL (8.10) ──
+  {id:"8-016", q:"Hvilket signal vises her?", img:"./bilder/innkjor_20A.svg", options:["Signal 20A «Stopp»","Signal 20B «Stopp»","Signal 21 «Kjør med redusert hastighet»","Signal 22 «Kjør»"], correct:0, explanation:"TJN 8.10: Signal 20A «Stopp» viser ett rødt blinkende lys. Signalbetydning: «Stopp minst 20 meter foran signalet, eventuelt foran orienteringsstolpen.» Brukes i innkjørhovedsignal og blokksignal."},
+  {id:"8-017", q:"Hva er forskjellen mellom signal 20A og signal 20B «Stopp»?", img:"./bilder/utkjor_20B.svg", options:["20A viser ett rødt blinkende lys, 20B viser ett rødt fast lys","20A viser ett rødt fast lys, 20B viser to røde faste lys","20A brukes kun for blokksignal, 20B kun for innkjørhovedsignal","20A er for dag, 20B er for natt"], correct:0, explanation:"TJN 8.10/8.11/8.12/8.13: Signal 20A «Stopp» viser ett rødt blinkende lys (innkjørhovedsignal og blokksignal). Signal 20B «Stopp» viser ett rødt fast lys (utkjørhovedsignal, indre hovedsignal, enkelt innkjørsignal, midlertidig innkjørsignal og midlertidig utkjørsignal)."},
+  {id:"8-018", q:"Hvilket signal vises her?", img:"./bilder/innkjor_21.svg", options:["Signal 20A «Stopp»","Signal 21 «Kjør med redusert hastighet»","Signal 22 «Kjør»","Signal 25 «Forvent kjør»"], correct:1, explanation:"TJN 8.10: Signal 21 «Kjør med redusert hastighet» viser ett grønt fast lys. Signalbetydning: «Toget kan kjøre inn på stasjonen med redusert hastighet i henhold til bestemmelsene i kapittel 6.» Jf. TJN 8.7 nr. 3 gjelder dette fra første avvikende sporveksel som forgrener togspor i togveien."},
+  {id:"8-019", q:"Hvilket signal vises her?", img:"./bilder/innkjor_22.svg", options:["Signal 21 «Kjør med redusert hastighet»","Signal 22 «Kjør»","Signal 25 «Forvent kjør»","Signal 20B «Stopp»"], correct:1, explanation:"TJN 8.10: Signal 22 «Kjør» viser to grønne faste lys på loddrett linje. Signalbetydning: «Toget kan kjøre inn på stasjonen med største tillatte hastighet.» Jf. TJN 8.7 nr. 3 gjelder signal 22 normalt kjøring over ikke avvikende sporveksler."},
+
+  // ── UTKJØRHOVEDSIGNAL (8.11) ──
+  {id:"8-020", q:"Hvilket signal vises her?", img:"./bilder/utkjor_20B.svg", options:["Signal 20A «Stopp»","Signal 20B «Stopp»","Signal 21 «Kjør med redusert hastighet»","Signal 22 «Kjør»"], correct:1, explanation:"TJN 8.11: Signal 20B «Stopp» viser ett rødt fast lys. Signalbetydning: «Stopp senest ved innkjørtogveiens slutt.»"},
+  {id:"8-021", q:"Hvilket signal vises her?", img:"./bilder/utkjor_21.svg", options:["Signal 21 «Kjør med redusert hastighet»","Signal 22 «Kjør»","Signal 20B «Stopp»","Signal 24 «Forvent kjør med redusert hastighet»"], correct:0, explanation:"TJN 8.11: Signal 21 «Kjør med redusert hastighet» viser ett grønt fast lys. Signalbetydning: «Toget kan kjøre ut fra eller passere stasjonen med redusert hastighet i henhold til bestemmelsene i kapittel 6.»"},
+  {id:"8-022", q:"Hvilket signal vises her?", img:"./bilder/utkjor_22.svg", options:["Signal 21 «Kjør med redusert hastighet»","Signal 22 «Kjør»","Signal 25 «Forvent kjør»","Signal 20A «Stopp»"], correct:1, explanation:"TJN 8.11: Signal 22 «Kjør» viser to grønne faste lys på loddrett linje. Signalbetydning: «Toget kan kjøre ut fra eller passere stasjonen med største tillatte hastighet.»"},
+
+  // ── INDRE HOVEDSIGNAL (8.12) ──
+  {id:"8-023", q:"Hvilket signal vises her?", img:"./bilder/indre_20B.svg", options:["Signal 20A «Stopp»","Signal 20B «Stopp»","Signal 21 «Kjør med redusert hastighet»","Signal 43 «Kjøring forbudt»"], correct:1, explanation:"TJN 8.12: Signal 20B «Stopp» viser ett rødt fast lys. Signalbetydning: «Stopp foran signalet.»"},
+  {id:"8-024", q:"Hvilket signal vises her?", img:"./bilder/indre_22.svg", options:["Signal 22 «Kjør»","Signal 21 «Kjør med redusert hastighet»","Signal 25 «Forvent kjør»","Signal 45 «Kjøring tillatt»"], correct:0, explanation:"TJN 8.12: Signal 22 «Kjør» viser to grønne faste lys på loddrett linje. Signalbetydning: «Toget kan kjøre videre på stasjonen med største tillatte hastighet.»"},
+
+  // ── BLOKKSIGNAL (8.13) ──
+  {id:"8-025", q:"Hvilket signal vises her?", img:"./bilder/blokk_20A.svg", options:["Signal 20A «Stopp»","Signal 20B «Stopp»","Signal 22 «Kjør»","Signal 21 «Kjør med redusert hastighet»"], correct:0, explanation:"TJN 8.13: Signal 20A «Stopp» i blokksignal viser ett rødt blinkende lys. Signalbetydning: «Stopp minst 20 meter foran signalet, eventuelt foran orienteringsstolpen.»"},
+  {id:"8-026", q:"Hvilket signal vises her?", img:"./bilder/blokk_22.svg", options:["Signal 22 «Kjør»","Signal 21 «Kjør med redusert hastighet»","Signal 25 «Forvent kjør»","Signal 20A «Stopp»"], correct:0, explanation:"TJN 8.13: Signal 22 «Kjør» viser to grønne faste lys på loddrett linje. Signalbetydning: «Toget kan kjøre inn på neste blokkstrekning med største tillatte hastighet.» Blokksignal kan bare vise signal 20A «Stopp» eller signal 22 «Kjør» (ikke signal 21)."},
+
+  // ── FORSIGNAL (8.14) ──
+  {id:"8-027", q:"Hva er funksjonen til et forsignal?", img:"./bilder/forsignal_25.svg", options:["Å angi hastigheten gjennom stasjonsområdet","Å varsle om signalbildet i det kommende hovedsignalet","Å erstatte hovedsignalet ved feil","Å gi tilleggsinformasjon om togveiens retning"], correct:1, explanation:"TJN 8.14: Forsignal er satt opp foran hovedsignalet det tilhører og i tilstrekkelig bremseavstand fra hovedsignalet. Forsignalet varsler om signalbildet i det kommende hovedsignalet."},
+  {id:"8-028", q:"Hvilket signal vises her?", img:"./bilder/forsignal_23.svg", options:["Signal 23 «Forvent stopp»","Signal 24 «Forvent kjør med redusert hastighet»","Signal 25 «Forvent kjør»","Forsignalet er slukket"], correct:0, explanation:"TJN 8.14: Signal 23 «Forvent stopp» viser ett gult blinkende lys. Signalbetydning: «Toget skal redusere hastigheten slik at toget kan stoppe foran hovedsignalet, eller på stasjon senest ved togveiens slutt. Tilhørende hovedsignal viser signal 20A eller 20B «Stopp».»"},
+  {id:"8-029", q:"Hvilket signal vises her?", img:"./bilder/forsignal_24.svg", options:["Signal 23 «Forvent stopp»","Signal 24 «Forvent kjør med redusert hastighet»","Signal 25 «Forvent kjør»","Forsignalet er slukket"], correct:1, explanation:"TJN 8.14: Signal 24 «Forvent kjør med redusert hastighet» viser ett gult og ett grønt blinkende lys på loddrett linje. Signalbetydning: «Toget kan redusere hastigheten. Tilhørende hovedsignal viser signal 21 «Kjør med redusert hastighet».»"},
+  {id:"8-030", q:"Hvilket signal vises her?", img:"./bilder/forsignal_25.svg", options:["Signal 23 «Forvent stopp»","Signal 24 «Forvent kjør med redusert hastighet»","Signal 25 «Forvent kjør»","Forsignalet er slukket"], correct:2, explanation:"TJN 8.14: Signal 25 «Forvent kjør» viser ett grønt blinkende lys. Signalbetydning: «Toget kan fortsette med største tillatte hastighet. Tilhørende hovedsignal viser signal 22 «Kjør».»"},
+  {id:"8-031", q:"Hvor er forsignalet normalt plassert i forhold til hovedsignalet?", img:null, options:["Nøyaktig halvveis mellom to hovedsignaler","I tilstrekkelig bremseavstand fra hovedsignalet","100 meter foran hovedsignalet","Ved stasjonens ytterste sporveksel"], correct:1, explanation:"TJN 8.14 nr. 1: «Forsignal er satt opp foran hovedsignalet det tilhører og i tilstrekkelig bremseavstand fra hovedsignalet.» Kommentar: Med tilstrekkelig bremseavstand menes den avstanden som er nødvendig for å kunne stoppe toget før hovedsignalet."},
+  {id:"8-032", q:"Hva skjer med forsignal som er montert på samme mast som et hovedsignal som viser «Stopp»?", img:null, options:["Forsignalet viser «Forvent stopp»","Forsignalet er slukket","Forsignalet viser «Forvent kjør med redusert hastighet»","Forsignalet blinker rødt"], correct:1, explanation:"TJN 8.14 nr. 3: «Forsignal som er satt opp under et hovedsignal, er slukket når dette hovedsignalet viser signal 20A eller 20B «Stopp». Forsignal kan også være slukket når hovedsignalet viser signal 21 «Kjør med redusert hastighet» og det samtidig vises signal til forkortet togvei eller til buttspor.»"},
+
+  // ── REPETÉRSIGNAL (8.15) ──
+  {id:"8-033", q:"Hvilket signal vises her?", img:"./bilder/rep_22.svg", options:["Signal 22 «Kjør»","Signal 21 «Kjør med redusert hastighet»","Signal 25 «Forvent kjør»","Signal 20A «Stopp»"], correct:0, explanation:"TJN 8.15 nr. 3: «Repetérsignal viser samme signal som hovedsignalet, signal 21 «Kjør med redusert hastighet» eller signal 22 «Kjør». Viser hovedsignalet signal 20B «Stopp», er repetérsignalet slukket.»"},
+  {id:"8-034", q:"Når settes et repetérsignal opp?", img:"./bilder/rep_off.svg", options:["Alltid foran alle utkjørhovedsignaler","Foran indre hovedsignal eller utkjørhovedsignal når hovedsignalet ikke kan ses fra tog som har stoppet ved plattform","Kun på stasjoner med ERTMS","Foran alle blokksignaler"], correct:1, explanation:"TJN 8.15 nr. 1: «Repetérsignal kan være satt opp foran indre hovedsignal eller utkjørhovedsignal når hovedsignalet ikke kan ses fra tog som har stoppet ved plattform, eller det kan være tvil om hvilket spor hovedsignalet gjelder for. Dette gjelder likevel ikke når det er satt opp togsporsignaler.»"},
+
+  // ── ENKELT INNKJØRSIGNAL (8.16) ──
+  {id:"8-035", q:"Hvilket signal vises her?", img:"./bilder/enkelt_innkjor_20B.svg", options:["Signal 20A «Stopp»","Signal 20B «Stopp»","Signal 21 «Kjør med redusert hastighet»","Signal 22 «Kjør»"], correct:1, explanation:"TJN 8.16: Signal 20B «Stopp» i enkelt innkjørsignal viser ett rødt fast lys. Signalbetydning: «Stopp minst 20 meter foran signalet, eventuelt foran orienteringsstolpen.»"},
+  {id:"8-036", q:"Hvilket signal vises her?", img:"./bilder/enkelt_innkjor_21.svg", options:["Signal 20B «Stopp»","Signal 21 «Kjør med redusert hastighet»","Signal 22 «Kjør»","Signal 32 «Forsiktig kjøring»"], correct:1, explanation:"TJN 8.16: Signal 21 «Kjør med redusert hastighet» i enkelt innkjørsignal viser ett grønt fast lys. Signalbetydning: «Toget kan kjøre inn på stasjonen med redusert hastighet i henhold til bestemmelsene i kapittel 6.»"},
+  {id:"8-037", q:"Hva gjelder for enkelt innkjørsignal ved tilbakestilling etter togpassering?", img:null, options:["Signalet omstilles automatisk som andre hovedsignaler","Signalet skal stilles tilbake til stopp manuelt etter at toget har passert","Signalet forblir i kjør til neste tog nærmer seg","Signalet slukkes automatisk etter 60 sekunder"], correct:1, explanation:"TJN 8.9 nr. 2: «På stasjoner med enkelt innkjørsignal skal signalet stilles tilbake til stopp etter at toget har passert signalet.» Kommentar: Enkelt innkjørsignal har ikke automatisk omstilling til stopp – det stilles manuelt tilbake."},
+
+  // ── FORSIKTIG KJØRING (8.19) ──
+  {id:"8-038", q:"Hva betyr dette signalbildet?", img:"./bilder/forsikt_32.svg", options:["Innkjøring tillatt med forkortet togvei – kjør forsiktig og vær klar til å stoppe","Kjøretillatelse med maks 40 km/t gjennom hele stasjonen","Tog kan kjøre inn, men plattformen er okkupert av annet tog","Forbikjøringssignal gitt av togleder muntlig"], correct:0, explanation:"TJN 8.19: Signal 32 «Forsiktig kjøring» viser lysende hvitt kors på mørk bunn. Det er satt opp ved innkjørhovedsignal eller indre hovedsignal der togveien er forkortet, der toget kjører inn i korte buttspor eller der det er andre særlige forhold. Signalbetydning: «Toget skal kjøre forsiktig inn i et togspor.»"},
+
+  // ── LINJESIGNAL (8.20) ──
+  {id:"8-039", q:"Hvilket signal vises her?", img:"./bilder/linjesignal_35B.svg", options:["Signal 35B – linjesignal","Signal 22 «Kjør» i blokksignal","Signal 35A – linjesignal viser «Kjør»","Signal 20C «Stopp» i linjesignal"], correct:0, explanation:"Linjesignal viser bokstaven S for skifting, eller annet signal avhengig av type. Her vises signal 35B."},
+
+  // ── TOGSPORSIGNAL (8.21) ──
+  {id:"8-040", q:"Hvilket signal vises her?", img:"./bilder/togspor_36A.svg", options:["Signal 36A «Kjør med redusert hastighet» i togsporsignal","Signal 22 «Kjør» i indre hovedsignal","Signal 35A i linjesignal","Signal 45 «Kjøring tillatt» i dvergsignal"], correct:0, explanation:"TJN 8.21: Togsporsignal kan være satt opp foran indre hovedsignal eller utkjørhovedsignal. Signal 36A «Kjør med redusert hastighet» vises med to hvite lys på loddrett linje og betyr at tog kan kjøre videre med redusert hastighet."},
+  {id:"8-041", q:"Når er et togsporsignal slukket?", img:"./bilder/togspor_off.svg", options:["Når hovedsignalet viser signal 22 «Kjør»","Når hovedsignalet viser «Stopp»","Når togveien er sikret for gjennomkjøring","Når stasjonene er ubetjent"], correct:1, explanation:"TJN 8.21 nr. 3: «Viser hovedsignalet signal 20B «Stopp», er togsporsignalet slukket.»"},
+
+  // ── HØYT SKIFTESIGNAL (8.22) ──
+  {id:"8-042", q:"Hvilket signal vises her?", img:"./bilder/skift_forbud_41.svg", options:["Signal 41 «Skifting forbudt»","Signal 42 «Skifting tillatt»","Signal 43 «Kjøring forbudt»","Signal 46 «Frigitt for lokal skifting»"], correct:0, explanation:"Signal 41 «Skifting forbudt» i høyt skiftesignal viser en hvit vannrett strek."},
+  {id:"8-043", q:"Hvilket signal vises her?", img:"./bilder/skift_tillatt_42.svg", options:["Signal 41 «Skifting forbudt»","Signal 42 «Skifting tillatt»","Signal 45 «Kjøring tillatt»","Signal 44 «Varsom kjøring tillatt»"], correct:1, explanation:"Signal 42 «Skifting tillatt» i høyt skiftesignal viser en hvit skrå strek 45° oppover til høyre."},
+
+  // ── DVERGSIGNALER (8.23–8.24) ──
+  {id:"8-044", q:"Hvilket signal vises her i dvergsignalet?", img:"./bilder/dverg_43.svg", options:["Signal 43 «Kjøring forbudt»","Signal 45 «Kjøring tillatt»","Signal 44 «Varsom kjøring tillatt»","Signal 46 «Frigitt for lokal skifting»"], correct:0, explanation:"TJN 8.23: Signal 43 «Kjøring forbudt» i dvergsignal viser to hvite faste lys vannrett. Forbudt å passere dvergsignalet. Dvergsignal står i avhengighet til sentralstilte sporveksler og sporsperrer, unntatt når det viser signal 46."},
+  {id:"8-045", q:"Hvilket signal vises her i dvergsignalet?", img:"./bilder/dverg_44.svg", options:["Signal 45 «Kjøring tillatt»","Signal 44 «Varsom kjøring tillatt»","Signal 43 «Kjøring forbudt»","Signal 46 «Frigitt for lokal skifting»"], correct:1, explanation:"Signal 44 «Varsom kjøring tillatt» viser to hvite faste lys skråstilt oppover til venstre. Gjelder for skifting inn i belagt spor, buttspor, usikret område eller fram til neste dvergsignal."},
+  {id:"8-046", q:"Hvilket signal vises her i dvergsignalet?", img:"./bilder/dverg_45.svg", options:["Signal 44 «Varsom kjøring tillatt»","Signal 45 «Kjøring tillatt»","Signal 43 «Kjøring forbudt»","Signal 46 «Frigitt for lokal skifting»"], correct:1, explanation:"Signal 45 «Kjøring tillatt» viser to hvite faste lys loddrett (vertikalt). Når dette vises for skift, viser neste dvergsignal i skifteveien signal 44 eller 45, og sporet er fritt."},
+  {id:"8-047", q:"Hva er forskjellen mellom dvergsignal 44 «Varsom kjøring tillatt» og 45 «Kjøring tillatt»?", img:null, options:["44 gjelder kun skift, 45 gjelder kun tog","44 gjelder for inn i belagt spor, buttspor eller usikret område – 45 betyr sporet er fritt","44 viser blinkende lys, 45 viser fast lys","44 brukes ved innkjøring, 45 ved utkjøring"], correct:1, explanation:"TJN 8.23 nr. 6: Signal 44 «Varsom kjøring tillatt» gjelder for «skifting inn i spor som er belagt med kjøretøy, inn i buttspor, til usikret område med håndstilte sporveksler eller fram til neste dvergsignal.» Når signal 45 «Kjøring tillatt» vises for skift, er «sporet mellom dvergsignalene fritt.»"},
+  {id:"8-048", q:"Hvilket signal vises her i dvergsignalet?", img:"./bilder/dverg_46A.svg", options:["Signal 45 «Kjøring tillatt»","Signal 44 «Varsom kjøring tillatt»","Signal 46 «Frigitt for lokal skifting»","Signal 43 «Kjøring forbudt»"], correct:2, explanation:"TJN 8.23: Signal 46 «Frigitt for lokal skifting» kan vise ett hvitt fast lys oppe til høyre (46A), eller to hvite faste lys på skrå opp til venstre (46B). Jf. TJN 8.23 nr. 3: «Dvergsignal står i avhengighet til sentralstilte sporveksler og sporsperrer, unntatt når det viser signal 46 «Frigitt for lokal skifting».»"},
+
+  // ── SPORVEKSELSIGNALER (8.26–8.27) ──
+  {id:"8-049", q:"Hva betyr dette sporvekselsignalet?", img:"./bilder/signal_51A_rett_fram.svg", options:["Signal 51A – sporvekselen ligger i normalstilling (rett fram)","Signal 51B – sporvekselen fra avvikespor","Signal 51C – sporvekselen ligger for avvik til venstre","Signal 51D – sporvekselen ligger for avvik til høyre"], correct:0, explanation:"Signal 51A for enkel sporveksel i normalstilling viser en hvit rektangulær firkant med den lengste siden loddrett (TJN 8.26)."},
+  {id:"8-050", q:"Hva betyr dette sporvekselsignalet?", img:"./bilder/signal_51C_til_venstre.svg", options:["Signal 51A – sporvekselen ligger i normalstilling","Signal 51B – sporvekselen fra avvikespor","Signal 51C – sporvekselen ligger for avvik til venstre","Signal 51D – sporvekselen ligger for avvik til høyre"], correct:2, explanation:"Signal 51C for avvik til venstre viser en hvit pil som peker opp til venstre."},
+  {id:"8-051", q:"Hva betyr dette sporvekselsignalet?", img:"./bilder/signal_51D_til_hoyre.svg", options:["Signal 51A – sporvekselen ligger i normalstilling","Signal 51B – sporvekselen fra avvikespor","Signal 51C – sporvekselen ligger for avvik til venstre","Signal 51D – sporvekselen ligger for avvik til høyre"], correct:3, explanation:"Signal 51D for avvik til høyre viser en hvit pil som peker opp til høyre."},
+
+  // ── KRYSSPORVEKSELSIGNAL (8.27) ──
+  {id:"8-052", q:"Hva betyr dette sporvekselsignalet?", img:"./bilder/signal_52A_fra_venstre_til_hoyre.svg", options:["Signal 52A – kjøring fra venstre spor til høyre spor","Signal 52B – kjøring fra høyre spor til venstre spor","Signal 51A – normalstilling rett fram","Signal 52C – kjøring fra venstre til venstre"], correct:0, explanation:"Signal 52A viser kjøring fra venstre spor til høyre spor i kryssporveksel."},
+
+  // ── SPORSPERRESIGNAL (8.28) ──
+  {id:"8-053", q:"Hva betyr dette sporsperresignalet?", img:"./bilder/signal_53_sporet_sperret.svg", options:["Signal 53 «Sporet sperret» – sporsperren er i sperrestilling","Signal 54 «Sporet fritt» – sporsperren er i kjørestilling","Signal 43 «Kjøring forbudt» i dvergsignal","Signal 51B – sporvekselen fra avvikespor"], correct:0, explanation:"Signal 53 «Sporet sperret» viser at sporsperren er lagt i sperrestilling."},
+  {id:"8-054", q:"Hva betyr dette sporsperresignalet?", img:"./bilder/signal_54_sporet_fritt.svg", options:["Signal 53 «Sporet sperret» – sporsperren er i sperrestilling","Signal 54 «Sporet fritt» – sporsperren er i kjørestilling","Signal 51A – sporvekselen i normalstilling","Signal 66 «Togvei slutt»"], correct:1, explanation:"Signal 54 «Sporet fritt» viser at sporsperren er lagt i kjørestilling."},
+
+  // ── PLANOVERGANGSSIGNAL (8.29–8.30) ──
+  {id:"8-055", q:"Hva betyr dette planovergangssignalet?", img:"./bilder/55_plo_stopp.svg", options:["Planovergangen er sikret – kjør normalt","Planovergangen er sperret for veitrafikk – kjør normalt","Stopp – planovergangen er ikke sikret","Midlertidig hastighetsnedsettelse ved planovergangen"], correct:2, explanation:"Signal 55 «Stopp foran planovergangen» viser ett rødt blinkende lys. Planovergangen er ikke sikret – toget skal stoppe foran signalet."},
+  {id:"8-056", q:"Hva betyr dette planovergangssignalet?", img:"./bilder/56A_plo_passere.svg", options:["To fiolette blinkende lys","Hvitt blinkende lys – planovergangen er sikret","To røde faste lys","Grønt fast lys"], correct:1, explanation:"Signal 56A «Passér» viser hvitt blinkende lys og betyr at planovergangen er sikret."},
+  {id:"8-057", q:"Hva viser forsignalet for planovergangssignalet når det viser «Forvent stopp»?", img:null, options:["Ett gult blinkende lys","Ett fiolett blinkende lys","Ett rødt blinkende lys","Ett grønt blinkende lys"], correct:1, explanation:"Forsignal for planovergangssignal viser ett fiolett blinkende lys når planovergangssignalet viser «Stopp foran planovergangen»."},
+
+  // ── RASVARSLING (8.31) ──
+  {id:"8-058", q:"Hva betyr dette rasvarslingssignalet?", img:"./bilder/signal_59_rasfare.svg", options:["Signal 59 «Rasfare» – stopp foran signal 64C «Rasvarslingsstolpe» ved begynnelsen av rasfarestrekningen","Signal 56C «Tog kan passere rasfarestrekning» – kjør normalt","Midlertidig nedsatt hastighet til 40 km/t pga. rasfare","Rasvarslingsstrekningen er fri – kjør med halv sikthastighet"], correct:0, explanation:"TJN 8.31 / 7.26: Signal 59 «Rasfare» viser to gule blinkende lys. Rasvarslingssignalet er plassert i tilstrekkelig bremseavstand fra signal 64C «Rasvarslingsstolpe». Toget skal stoppe foran stolpen. Dersom rasvarslingssignalet er slukket, skal toget også stoppe."},
+
+  // ── KONTAKTLEDNINGSSIGNALER (8.45–8.51) ──
+  {id:"8-059", q:"Hva betyr dette skiltet?", img:"./bilder/signal_65A_jordet_seksjon.svg", options:["Kontaktledningen er strømførende med jordingsfeil","Lokomotiv med hevet strømavtaker må ikke kjøre forbi skiltet uten tillatelse","Nøytralseksjon begynner her","Jordfeil i kontaktledningen – senk strømavtaker umiddelbart"], correct:1, explanation:"Signal 65A «Jordet seksjon» angir at lokomotiv med hevet strømavtaker ikke må kjøre forbi skiltet uten tillatelse fra skifteleder."},
+  {id:"8-060", q:"Hva betyr denne orienteringsstolpen?", img:"./bilder/64C.png", options:["Signal 64C «Rasvarslingsstolpe» – markerer begynnelse eller slutt på rasvarslingsanlegg","Signal 64B «Seksjoneringsstolpe» – stopp foran stolpen med hevet strømavtaker","Signal 64A «Grense-/innkoblingsstolpe» – grense for skiftelengde","Signal 64D «Bremsestolpe» – markerer begynnelse på bremsevei"], correct:0, explanation:"TJN 8.68: Signal 64C «Rasvarslingsstolpe» markerer begynnelse eller slutt på rasvarslingsanlegg. Det er en 2 meter høy stolpe med gule og hvite felter."},
+  {id:"8-061", q:"Hva betyr denne orienteringsstolpen?", img:"./bilder/64D.png", options:["Signal 64C «Rasvarslingsstolpe» – markerer begynnelse på rasvarslingsanlegg","Signal 64D «Bremsestolpe» – markerer begynnelsen på bremseveien for tog som skal stoppe","Signal 64E «Teknisk stolpe» – markerer teknisk innretning","Signal 64F «Dvergsignalstolpe» – markerer hvor dvergsignal skulle vært"], correct:1, explanation:"TJN 8.68: Signal 64D «Bremsestolpe» (gule og sorte felter) markerer begynnelsen på bremseveien for tog som skal stoppe og som kjører med automatisk hastighetsregulering."},
+  {id:"8-062", q:"Hva betyr denne orienteringsstolpen?", img:"./bilder/64F.png", options:["Signal 64D «Bremsestolpe» – markerer begynnelsen på bremsevei","Signal 64F «Dvergsignalstolpe» – markerer sted der dvergsignal skulle vært satt opp","Signal 64E «Teknisk stolpe» – markerer teknisk innretning","Signal 64A «Grense-/innkoblingsstolpe» – markerer innkoblingsfelt for planovergang"], correct:1, explanation:"TJN 8.68: Signal 64F «Dvergsignalstolpe» (1/2 meter høy stolpe) markerer sted der dvergsignal skulle vært satt opp. Dvergsignalet gjelder fra stolpen."},
+  {id:"8-063", q:"Hva betyr dette skiltet?", img:"./bilder/signal_65G_stopp_stromavtaker.svg", options:["Hev strømavtaker opp mot kontaktledningen","Senk strømavtaker ned fra kontaktledningen","Forbudt å kjøre forbi med hevet strømavtaker uten tillatelse fra skifteleder","Koble ut hovedbryter"], correct:2, explanation:"Signal 65G angir at kjøretøy med hevet strømavtaker ikke må kjøre forbi uten tillatelse fra skifteleder (TJN 8.51)."},
+  {id:"8-064", q:"Hva betyr dette skiltet?", img:"./bilder/75C_HEV.png", options:["Signal 75C «Hev» – hev sporrenseren","Signal 65F «Heving av strømavtaker» – hev strømavtaker","Signal 64F «Dvergsignalstolpe»","Signal 64H «Norsk togradionettverk»"], correct:0, explanation:"TJN 8.74: Skiltet viser signal 75C «Hev» og markerer at sporrenseren skal heves."},
+  {id:"8-065", q:"Hva betyr dette skiltet?", img:"./bilder/75D_senk.png", options:["Signal 75D «Senk» – senk sporrenseren","Signal 65E «Senking av strømavtaker» – senk strømavtaker","Signal 64D «Bremsestolpe»","Signal 64G «Bevegelig skinnekryss»"], correct:0, explanation:"TJN 8.74: Skiltet viser signal 75D «Senk» og markerer at sporrenseren skal senkes."},
+
+  // ── TOGVEI SLUTT & ORIENTERINGSSIGNALER (8.52–8.53) ──
+  {id:"8-066", q:"Hva betyr dette skiltet?", img:"./bilder/signal_66_togvei_slutt.png", options:["Togveien slutter her – toget skal stoppe foran signalet","Stasjonens grense er passert – linjen begynner","Skiftegrensen er nådd – skifting forbudt forbi dette punktet","Neste hovedsignal er det siste på stasjonen"], correct:0, explanation:"Signal 66 «Togvei slutt» angir at togveien slutter her – toget skal stoppe foran signalet."},
+  {id:"8-067", q:"Hva betyr dette skiltet?", img:"./bilder/signal_67A_orienteringssignal.svg", options:["Signal 67A «Orienteringssignal» – satt opp 250–500 m foran planovergang, holdeplass m.m.","Signal 67A «Orienteringssignal for innkjørhovedsignal»","Signal 60A «ATC forsignal»","Signal 64E «Teknisk stolpe»"], correct:0, explanation:"Signal 67A «Orienteringssignal» er satt opp på høyre side av sporet 250–500 meter foran planovergang, holdeplass m.m. Det brukes når signal 67B, C eller D ikke passer (TJN 8.68)."},
+  {id:"8-068", q:"Hva betyr dette skiltet?", img:"./bilder/signal_67B_planovergang.svg", options:["Signal 67B «Orienteringssignal for planovergang»","Signal 67A «Orienteringssignal»","Signal 67C «Orienteringssignal for holdeplass»","Signal 70 «Planovergangsskilt»"], correct:0, explanation:"Signal 67B «Orienteringssignal for planovergang» er satt opp 250–500 m foran planovergang der tog skal gi signal «Tog kommer» (TJN 8.68)."},
+  {id:"8-069", q:"Hva betyr dette skiltet?", img:"./bilder/signal_67C_holdeplass.svg", options:["Signal 67C «Orienteringssignal for holdeplass»","Signal 67B «Orienteringssignal for planovergang»","Signal 67D «Orienteringssignal for planovergang og holdeplass»","Signal 67A «Orienteringssignal»"], correct:0, explanation:"Signal 67C «Orienteringssignal for holdeplass» er satt opp 250–500 m foran holdeplass der tog skal gi signal «Tog kommer» (TJN 8.68)."},
+
+  // ── HASTIGHETSSIGNALER (8.54–8.57) ──
+  {id:"8-070", q:"Hva betyr dette hastighetsskiltet?", img:"./bilder/signal_68A_nedsatt_hastighet.svg", options:["Anbefalt hastighet – kun veiledende","Ny permanent hastighetsgrense begynner – hastigheten settes ned","Maks hastighet for krengetog","Midlertidig nedsatt hastighet pga. vedlikeholdsarbeid"], correct:1, explanation:"Signal 68A «Nedsatt kjørehastighet» angir at hastigheten skal settes ned til angitt verdi fra dette punktet."},
+  {id:"8-071", q:"Hva betyr dette hastighetsskiltet?", img:"./bilder/signal_68B_okt_hastighet.svg", options:["Hastighetsgrensen fra forrige signal opphører – ny høyere hastighet gjelder","Fri fart – ingen hastighetsgrense gjelder","Hastigheten økes til angitt verdi","Midlertidig hastighetsnedsettelse er over"], correct:2, explanation:"Signal 68B «Økt kjørehastighet» angir at hastigheten økes til angitt verdi."},
+  {id:"8-072", q:"Hva betyr dette hastighetsskiltet?", img:"./bilder/signal_68C_avvikende_hastighet.svg", options:["Hastighetsgrense for avvikende sporveksler ved denne stasjonen","Hastigheten gjelder kun for krengetog","Midlertidig hastighetsgrense for anleggsområde","Maks hastighet for godstog med tung last"], correct:0, explanation:"Signal 68C «Avvikende hastighet» angir hastighetsgrensen som gjelder ved kjøring over avvikende sporveksler."},
+  {id:"8-073", q:"Hva betyr dette skiltet?", img:"./bilder/signal_68D_markeringsmerke.svg", options:["Signal 68D «Markeringsmerke» – angir punkt der ny hastighet begynner å gjelde","Signal 68A «Nedsatt kjørehastighet» – hastigheten settes ned","Signal 68B «Økt kjørehastighet» – hastigheten økes","Signal 67A «Orienteringssignal» – 250–500 m til planovergang eller holdeplass"], correct:0, explanation:"TJN 8.54: Signal 68D «Markeringsmerke» angir et punkt der ny hastighet begynner å gjelde."},
+  {id:"8-074", q:"Hva betyr dette lyssignalet?", img:"./bilder/avvikende_68E.svg", options:["Viser tillatt hastighet gjennom avvikende sporveksler når denne er en annen enn 40 km/t","Angir at togveien er endret til et annet spor","Angir at sporvekselen er defekt","Viser linjehastigheten for strekningen"], correct:0, explanation:"Signal 68E «Avvikende hastighet» i lyssignal viser hastigheten gjennom avvikende sporveksler der denne er en annen enn 40 km/t (TJN 8.25)."},
+  {id:"8-075", q:"Hva betyr dette hastighetsskiltet?", img:"./bilder/signal_68F_tilleggshastighet.svg", options:["En ekstra hastighetsgrense som gjelder i tillegg for spesifikke togtyper","Hastighetsgrensen kan overstige normalen med angitt verdi","Hastighetsgrensen for lokomotiv uten vogner","Tilleggsgrense for godstog med tung last"], correct:0, explanation:"Signal 68F «Tilleggshastighet» angir en ekstra hastighetsgrense for spesifikke togtyper i tillegg til den generelle grensen."},
+  {id:"8-076", q:"Hva betyr dette hastighetsskiltet?", img:"./bilder/signal_68G_hastighet_krengetog.svg", options:["Hastighetsgrense som kun gjelder for krengetog","Hastighetsgrense for alle tog i kurver","Hastighetsgrense for godstog med farlig gods","Hastighetsgrense for tog over 200 km/t"], correct:0, explanation:"Signal 68G «Hastighet for krengetog» angir en egen hastighetsgrense for krengetog."},
+
+  // ── OPPLYSNINGSSKILT ──
+  {id:"8-077", q:"Hva betyr dette skiltet?", img:"./bilder/signal_103_sidesporskilt.svg", options:["Signal 103 «Sidesporskilt» – viser sidesporets navn, kilometerangivelse og mellom hvilke stasjoner det ligger","Signal 101 «Identifikasjonsskilt» – viser signalets identitet","Signal 74A «Toglengdeskilt» – angir stoppunkt for tog med angitt lengde","Signal 72A «Strekning med fjernstyring»"], correct:0, explanation:"TJN 8.62: «På sidespor er det satt opp langsgående skilt med angivelse av sidesporets navn, kilometerangivelse og mellom hvilke stasjoner sidesporet ligger.»"},
+  {id:"8-078", q:"Hva betyr dette skiltet?", img:"./bilder/62_Ugyldigskilt.png", options:["Signal 62 «Ugyldighetsskilt» – signalet er ikke i bruk og skal ignoreres","Signal 60C «ATC nødbrems»","Signal 68D «Markeringsmerke» – angir hvor ny hastighet gjelder","Signal 105E «Arbeidsområde»"], correct:0, explanation:"TJN 8.66/8.5 nr. 2: Signal 62 «Ugyldighetsskilt» markerer at signalet ikke er i bruk og skal ignoreres av fører. «Hovedsignal, forsignal, enkelt innkjørsignal og signal E35 «Stoppskilt» som ikke er i bruk, skal i tillegg merkes med signal 62 «Ugyldighetsskilt».»"},
+  {id:"8-079", q:"Hva betyr dette skiltet?", img:"./bilder/75A_KM.png", options:["Signal 75 «Kilometerskilt» – avstand i hele og halve kilometer fra banens nullpunkt","Signal 74A «Toglengdeskilt» – angir stoppunkt for tog","Signal 61A «Avstandsskilt» – avstand til neste hovedsignal","Signal 68A «Nedsatt kjørehastighet»"], correct:0, explanation:"TJN 8.73: «Kilometerskilt angir avstand i hele og halve kilometer fra nullpunktet.»"},
+
+  // ── SKILT FOR ATC (8.64) ──
+  {id:"8-080", q:"Hva betyr skiltet «FATC» langs sporet?", img:"./bilder/FATC_60F.png", options:["Strekning med fullt utbygd ATC begynner – alle hastighetsbegrensninger vises i ATC-panelet","Feil i ATC-systemet – kjør uten ATC","Fremtidig ATC – utstyret er installert men ikke aktivert","Forberedende ATC-sone – begrensede funksjoner"], correct:0, explanation:"FATC-skiltet angir at strekning med fullt utbygd ATC begynner og alle hastighetsbegrensninger vises i ATC-panelet."},
+  {id:"8-081", q:"Hva betyr skiltet «DATC» langs sporet?", img:"./bilder/DATC_60G.png", options:["Strekning med fullt utbygd ATC begynner","Strekning med delvis utbygd ATC begynner","Digital ATC – ny type ATC-system","ATC er deaktivert på denne strekningen"], correct:1, explanation:"DATC-skiltet angir at strekning med delvis utbygd ATC begynner."},
+  {id:"8-082", q:"Hva betyr dette skiltet?", img:"./bilder/SLUTTATC_60H.png", options:["ATC er midlertidig deaktivert pga. feil","ATC-strekningen slutter","ATC-utstyret langs sporet er under vedlikehold","ATC-signaler er heretter kun veiledende"], correct:1, explanation:"Skiltet «ATC Slutter» angir at ATC-strekningen slutter. ATC-panelet slukkes automatisk og tennes igjen ved innkjøring på ATC-utbygd strekning."},
+
+  // ── AVSTANDSSKILT (8.65) ──
+  {
+    id: "8-083",
+    q: "Hva betyr Signal 61A «Avstandsskilt 1» (skilt med én gul skråstripe)?",
+    img: "./bilder/61A_Avstandsskilt1.png",
+    options: [
+      "Det er 1000 meter til hovedsignal, enkelt innkjørsignal eller midlertidig innkjør-/utkjørsignal",
+      "Det er 800 meter til enkelt innkjørsignal eller midlertidig innkjørsignal",
+      "Det er 250 meter til hovedsignal der sikten til signalet er kortere enn 250 meter",
+      "Det varsler om at avstanden til neste rasvarslingsområde er 1000 meter"
+    ],
+    correct: 0,
+    explanation: "Kilde: orv.banenor.no, Kapittel 8, avsnitt 8.65. Signal 61A «Avstandsskilt 1» har én gul skråstripe og angir at det er 1000 meter til hovedsignal, enkelt innkjørsignal eller midlertidig innkjør-/utkjørsignal."
+  },
+  {
+    id: "8-084",
+    q: "Hva betyr Signal 61B «Avstandsskilt 2» (skilt med to gule skråstriper)?",
+    img: "./bilder/61B_Avstandsskilt2.png",
+    options: [
+      "Det er 800 meter til enkelt innkjørsignal eller midlertidig innkjørsignal",
+      "Det er 1000 meter til hovedsignal, enkelt innkjørsignal eller midlertidig innkjør-/utkjørsignal",
+      "Det er 250 meter til hovedsignal der sikten til signalet er kortere enn 250 meter",
+      "Det er 800 meter til neste forsignal eller repetersignal"
+    ],
+    correct: 0,
+    explanation: "Kilde: orv.banenor.no, Kapittel 8, avsnitt 8.65. Signal 61B «Avstandsskilt 2» har to gule skråstriper og angir at det er 800 meter til enkelt innkjørsignal eller midlertidig innkjørsignal."
+  },
+  {
+    id: "8-085",
+    q: "Hva betyr Signal 61C «Avstandsskilt 3» (skilt med tre gule skråstriper)?",
+    img:null,
+    options: [
+      "Det er 250 meter til signalet (brukes der sikten er kortere enn 250 meter)",
+      "Det er 1000 meter til hovedsignal, enkelt innkjørsignal eller midlertidig innkjør-/utkjørsignal",
+      "Det er 800 meter til enkelt innkjørsignal eller midlertidig innkjørsignal",
+      "Det er 250 meter til grensen for skifteområdet"
+    ],
+    correct: 0,
+    explanation: "Kilde: orv.banenor.no, Kapittel 8, avsnitt 8.65. Signal 61C «Avstandsskilt 3» har tre gule skråstriper og angir at det er 250 meter til hovedsignal, enkelt innkjørsignal, midlertidig innkjørsignal eller midlertidig utkjørsignal der sikten er for kort."
+  },
+  {
+    id: "8-086",
+    q: "For hvilke signaltyper settes dette skiltet opp?",
+    img: "./bilder/61B_Avstandsskilt2.png",
+    options: [
+      "Det settes KUN opp foran enkelt innkjørsignal og midlertidig innkjørsignal",
+      "Det settes opp foran alle typer hovedsignaler, inkludert blokksignaler og utkjørhovedsignaler",
+      "Det settes kun opp på strekninger med ERTMS (foran stoppskilt)",
+      "Det settes kun opp foran forsignaler der sikten er dårlig"
+    ],
+    correct: 0,
+    explanation: "Kilde: orv.banenor.no, Kapittel 8, avsnitt 8.65. Mens avstandsskilt 1 og 3 også gjelder ordinære hovedsignaler og blokksignaler, settes Signal 61B (800 meter) utelukkende opp foran enkelt innkjørsignal og midlertidig innkjørsignal."
+  },
+
+  // ── FALLVISER & STIGNINGSVISER (8.67) ──
+  {id:"8-087", q:"Hva betyr dette skiltet?", img:"./bilder/63A_FALL.png", options:["Fallviser – angir sporets helning i promille, fall i kjøreretningen","Stigningsviser – angir sporets helning i promille, stigning i kjøreretningen","Signal 68A «Nedsatt kjørehastighet» – hastigheten settes ned","Signal 74B «Lengdeskilt» – angir avstand langs sporet"], correct:0, explanation:"TJN 8.67: Fallviser angir sporets helning i promille der det er fall i kjøreretningen."},
+  {id:"8-088", q:"Hva betyr dette skiltet?", img:"./bilder/63B_STIG.png", options:["Fallviser – angir sporets helning i promille, fall i kjøreretningen","Stigningsviser – angir sporets helning i promille, stigning i kjøreretningen","Signal 68B «Økt kjørehastighet» – hastigheten økes","Signal 75 «Kilometerskilt» – avstand fra nullpunkt"], correct:1, explanation:"TJN 8.67: Stigningsviser angir sporets helning i promille der det er stigning i kjøreretningen."},
+
+  // ── ORIENTERINGSSTOLPER (8.68) ──
+  {id:"8-089", q:"Hva betyr denne orienteringsstolpen?", img:"./bilder/64E.png", options:["Signal 64B «Seksjoneringsstolpe»","Signal 64E «Teknisk stolpe» – ikke lysreflekterende, krever ingen handling","Signal 64A «Grense-/innkoblingstolpe»","Signal 64G «Bevegelig skinnekryss»"], correct:1, explanation:"TJN 8.8 nr. 1: «Skilt og orienteringsstolper er lysreflekterende. Dette gjelder likevel ikke for signal 64E «Teknisk stolpe» og signal 74B «Lengdeskilt».» Signal 64E «Teknisk stolpe» krever ingen handling fra fører."},
+
+  // ── PLANOVERGANGSSKILT (8.69) ──
+  {id:"8-090", q:"Hva betyr dette skiltet?", img:"./bilder/70_PLO.png", options:["Signal 70 «Planovergangsskilt» – planovergang med automatisk veibom- eller veisignalanlegg","Signal 67B «Orienteringssignal for planovergang» – 250–500 m til planovergang","Signal 73 «Rasvarslingsskilt» – rasvarslingsanlegg følger","Signal 65B «Varselsignal for kontaktledningssignal»"], correct:0, explanation:"TJN 8.69: Signal 70 «Planovergangsskilt» er satt opp i tilstrekkelig avstand foran planovergang med automatisk veibom- eller veisignalanlegg."},
+
+  // ── SKILT FOR FJERNSTYRING/TOGMELDING (8.70) ──
+  {id:"8-091", q:"Hva betyr dette skiltet?", img:"./bilder/72A_FJSstart.png", options:["Signal 72A «Strekning med fjernstyring» – trafikkstyringen utføres sentralt av togleder","Signal 72B «Ikke fjernstyrt» – fjernstyrt strekning slutter","Signal 73 «Rasvarslingsskilt» – rasvarslingssignal følger","Signal 70 «Planovergangsskilt» – planovergang med automatisk veibomanlegg følger"], correct:0, explanation:"TJN 8.70: «Signal 72A «Strekning med fjernstyring» er satt opp ved utkjørtogveien der strekning med fjernstyring begynner.»"},
+  {id:"8-092", q:"Hva betyr dette skiltet?", img:"./bilder/72B_FJSslutt.png", options:["Signal 72A «Strekning med fjernstyring» – fjernstyrt strekning begynner","Signal 72B «Ikke fjernstyrt» – fjernstyrt strekning slutter","Signal 104A «Driftsbanegård begynner»","Signal 62 «Ugyldighetsskilt» – signalet er ikke i bruk"], correct:1, explanation:"TJN 8.70: «Signal 72B «Ikke fjernstyrt» er satt opp på innkjørhovedsignalet der strekning med fjernstyring slutter, i utkjørtogveien der strekning med togmelding begynner.»"},
+
+  // ── SIGNALER FOR ARBEID (8.59) ──
+  {id:"8-093", q:"Hva betyr dette skiltet?", img:"./bilder/105A.png", options:["Signal 105A «Anleggsområde-jernbane begynner» – markerer grensen, oppstilt som fysisk hindring","Signal 105C «Arbeidsbrudd begynner» – grense for arbeidsbrudd på ERTMS-strekning","Signal 69A «Midlertidig nedsatt hastighet» – hastighetsnedsettelse i arbeidsområdet","Signal 108 «Arbeidsområde» – brukes i grensen mellom arbeidsområder"], correct:0, explanation:"TJN 8.59: «Signal 105A «Anleggsområde-jernbane begynner» og signal 105B «Anleggsområde-jernbane slutter» brukes for å markere grensen for anleggsområde-jernbane på strekning med fjernstyring og strekning med togmelding. Signalene settes opp slik at de utgjør en fysisk hindring mot forbikjøring.»"},
+  {id:"8-094", q:"Hva betyr dette skiltet?", img:"./bilder/105B.png", options:["Signal 105B «Anleggsområde-jernbane slutter»","Signal 105D «Arbeidsbrudd slutter» – grense for arbeidsbrudd på ERTMS-strekning","Signal 105A «Anleggsområde-jernbane begynner»","Signal 69B «Midlertidig hastighet opphører»"], correct:0, explanation:"TJN 8.59: Signal 105B «Anleggsområde-jernbane slutter» markerer at anleggsområdet er over."},
+  {id:"8-095", q:"Hva betyr dette skiltet?", img:"./bilder/105C.png", options:["Signal 105A «Anleggsområde-jernbane begynner» – brukes på strekning med fjernstyring/togmelding","Signal 105C «Arbeidsbrudd begynner» – brukes på strekning med ERTMS","Signal 105E «Arbeidsområde» – brukes i grensen mellom arbeidsområder","Signal 69A «Midlertidig nedsatt hastighet»"], correct:1, explanation:"TJN 8.59: «Signal 105C «Arbeidsbrudd begynner» og signal 105D «Arbeidsbrudd slutter» brukes for å markere grensen for arbeidsbrudd på strekning med ERTMS.» Til forskjell fra signal 105A/105B «Anleggsområde-jernbane» som brukes på strekning med fjernstyring og strekning med togmelding."},
+
+  // ── ERTMS ──
+  {id:"8-096", q:"Hvilken type signal er dette?", img:"./bilder/blokk_20A.svg", options:["Innkjørhovedsignal","Utkjørhovedsignal","Blokksignal","Indre hovedsignal"], correct:2, explanation:"TJN 8.13: Dette er et blokksignal. Kjennetegn: Blokksignal har sirkelformet identifikasjonsskilt (signal 101) og to gule vannrette lysreflekterende striper som er synlige fra begge sider. Blokksignal er hovedsignalet ved en blokkpost og er skillet mellom to blokkstrekninger."},
+  {id:"8-097", q:"Hvilken type signal er dette?", img:"./bilder/innkjor_20A.svg", options:["Innkjørhovedsignal","Utkjørhovedsignal","Blokksignal","Enkelt innkjørsignal"], correct:0, explanation:"TJN 8.10: Dette er et innkjørhovedsignal. Kjennetegn: Rektangulært identifikasjonsskilt med en av bokstavene A til K, stedskode og signalnummer. To gule vannrette lysreflekterende striper synlige fra begge sider. Satt opp minst 200 meter utenfor ytterste sentralstilte, motliggende sporveksel."},
+  {id:"8-098", q:"Hvilken type signal er dette?", img:"./bilder/utkjor_21.svg", options:["Innkjørhovedsignal","Utkjørhovedsignal","Indre hovedsignal","Blokksignal"], correct:1, explanation:"TJN 8.11: Dette er et utkjørhovedsignal. Kjennetegn: Rektangulært identifikasjonsskilt med bokstav, men uten gule striper på masten. Utkjørhovedsignal er satt opp før middel til nærmeste togspor."},
+  {id:"8-099", q:"Hvilken type signal er dette?", img:"./bilder/indre_21.svg", options:["Innkjørhovedsignal","Utkjørhovedsignal","Indre hovedsignal","Enkelt innkjørsignal"], correct:2, explanation:"TJN 8.12: Dette er et indre hovedsignal. Kjennetegn: Identifikasjonsskilt uten bokstav (kun nummer og stedskode). Har to gule striper som kun synes forfra. Indre hovedsignaler er satt opp mellom innkjørhovedsignal og utkjørhovedsignal."},
+  {id:"8-100", q:"Hvilken type signal er dette?", img:"./bilder/enkelt_innkjor_21.svg", options:["Innkjørhovedsignal","Utkjørhovedsignal","Enkelt innkjørsignal","Forsignal"], correct:2, explanation:"TJN 8.16: Dette er et enkelt innkjørsignal. Kjennetegn: Kun to lysposisjoner (ikke tre som hovedsignaler), rektangulært identifikasjonsskilt med bokstav og to gule striper. Satt opp minst 200 meter utenfor ytterste sporveksel på stasjoner med forenklet sikringsanlegg."},
+  {id:"8-101", q:"Hvilken type signal er dette?", img:"./bilder/forsignal_24.svg", options:["Innkjørhovedsignal","Forsignal for hovedsignal","Repetérsignal","Enkelt innkjørsignal"], correct:1, explanation:"TJN 8.14: Dette er et forsignal. Kjennetegn: To lysposisjoner, masten har en gul lysreflekterende stripe (ikke to). Forsignal er satt opp foran hovedsignalet det tilhører i tilstrekkelig bremseavstand. Forsignal varsler om signalbildet i det kommende hovedsignalet."},
+
+  // ── TOGFLØYTE (8.98–8.101) ──
+  {id:"8-102", q:"Hva er signal «Tog kommer» i togfløyten (TJN 8.100)?", img:null, options:["Ett langt støt etterfulgt av to korte","Tre korte støt etterfulgt av ett langt","Ett langt støt i togfløyten","Gjentatte korte støt i togfløyten"], correct:2, explanation:"Signal «Tog kommer» er ett langt støt i togfløyten (TJN 8.100)."},
+  {id:"8-103", q:"Hva er signal «Alarm, faresignal» i togfløyten (TJN 8.101)?", img:null, options:["Ett langt støt etterfulgt av to korte","Tre korte støt etterfulgt av ett langt","Gjentatte korte støt i togfløyten","Gjentatte lange støt i togfløyten"], correct:2, explanation:"Signal «Alarm, faresignal» er gjentatte korte støt i togfløyten (TJN 8.101)."}
+];
+
+/* ═══════════════════════════════════════════════════════════════
+   OTHER CHAPTERS — 40 fixed questions per chapter
+   Structure: same format as chapter 8
+   ═══════════════════════════════════════════════════════════════ */
+
+const chapter1Questions = [
+  { id:"1-001", q:"Hva er Trafikkregler for jernbanenettet (TJN)?", img:null, options:["Retningslinjer for passasjerer","Regelverket som gjelder for togframføring og skifting på Bane NORs nett","Anbefalinger for planlegging av nye jernbanelinjer","Lover fastsatt av EU for grensekryssende tog"], correct:1, explanation:"TJN er regelverket som gjelder for togframføring, skifting og arbeid i spor på Bane NORs jernbanenett." },
+  { id:"1-002", q:"Hvem stiller TJN direkte krav til?", img:null, options:["Kun førere og togledere","Fører, togleder, togekspeditør, ombordansvarlig, hovedsikkerhetsvakt, signalgiver, personale i skifting og arbeid i spor","Alle ansatte i Bane NOR uansett stilling","Kun jernbaneforetak med lisens"], correct:1, explanation:"TJN stiller direkte krav til fører, togleder, togekspeditør, ombordansvarlig, hovedsikkerhetsvakt, signalgiver og personale som deltar i skifting og arbeid i spor." },
+  { id:"1-003", q:"Kan Bane NOR gjøre unntak fra TJN?", img:null, options:["Nei, aldri","Ja, i det enkelte tilfellet dersom særlige forhold tilsier det, men ikke fra TSI OPE-krav","Ja, men bare på strekninger med ERTMS","Ja, men kun med godkjenning fra Statens jernbanetilsyn i hvert tilfelle"], correct:1, explanation:"Bane NOR kan gjøre unntak fra TJN i det enkelte tilfellet dersom særlige forhold tilsier det, men ikke fra regler fra TSI OPE-forskriften." },
+  { id:"1-004", q:"Hva er romblokkprinsippet?", img:null, options:["At hvert tog tildeles en avgrenset strekning (blokk) der ingen andre tog skal befinne seg","At togene kjører i en ring rundt stasjonsområdet","At det alltid skal være to blokksignaler mellom to tog","At togene blokkerer sporveksler automatisk ved passering"], correct:0, explanation:"Romblokkprinsippet innebærer at kjøretillatelse gis slik at det er sikker avstand mellom togene." },
+  { id:"1-005", q:"Hva menes med 'jernbaneinfrastruktur' i TJN?", img:null, options:["Kun skinner og sviller","Trasé, over- og underbygning, banestrømforsyning, kontaktledningsanlegg, signalanlegg og telekommunikasjon","Alle bygninger som tilhører Bane NOR","Kun signalanlegg og kontaktledning"], correct:1, explanation:"Jernbaneinfrastruktur omfatter trasé, over-/underbygning, banestrømforsyning, kontaktledning, signalanlegg og telekommunikasjon." },
+  { id:"1-006", q:"Hva menes med 'trafikkstyring' i TJN?", img:null, options:["Styring av veitrafikk nær planoverganger","Togledelse og andre funksjoner som koordinerer og ivaretar sikkerhet for tog og skifting","Ruteplanlegging utført av jernbaneforetakene","Kontroll av passasjerstrømmer på stasjoner"], correct:1, explanation:"Trafikkstyring er togledelse og funksjoner som koordinerer og ivaretar sikkerheten for kjøring av tog og skifting." },
+  { id:"1-007", q:"Hva betyr «ERTMS» i TJN-sammenheng?", img:null, options:["European Road Traffic Management System","European Rail Traffic Management System – europeisk togstyringssystem","Electronic Railway Timetable Management Software","Emergency Rail Tracking and Monitoring System"], correct:1, explanation:"ERTMS står for European Rail Traffic Management System – det europeiske togstyringssystemet." },
+  { id:"1-008", q:"Hva er en togekspeditør?", img:null, options:["Personen som selger billetter","Personen som utfører trafikkstyring lokalt på stasjon på strekning med togmelding","Personen som laster gods på toget","Personen som kontrollerer billetter om bord"], correct:1, explanation:"Togekspeditør utfører trafikkstyring lokalt på stasjon, særlig på strekning med togmelding." },
+  { id:"1-009", q:"Hvem har det øverste operative ansvaret for togframføringen?", img:null, options:["Føreren i det aktuelle toget","Togekspeditøren","Toglederen","Jernbaneforetakets driftsleder"], correct:2, explanation:"Toglederen har det øverste operative ansvaret for å overvåke og lede togframføringen." },
+  { id:"1-010", q:"Hva menes med en 'stasjon' i TJN?", img:null, options:["Ethvert sted der passasjerer kan gå av og på","Et avgrenset område av jernbaneinfrastrukturen som er angitt i strekningsbeskrivelsen","Alle bygninger som tilhører Bane NOR","Kun plasser der det er sikringsanlegg"], correct:1, explanation:"En stasjon er et avgrenset område av jernbaneinfrastrukturen som er angitt i strekningsbeskrivelsen." },
+  { id:"1-011", q:"Hva er 'linjen' i TJN?", img:null, options:["Strekningen mellom to stasjoner","Hele jernbanestrekningen fra Oslo til Trondheim","Sporveksler og kryssinger inne på stasjonsområdet","Perrongkanten der passasjerer venter"], correct:0, explanation:"Linjen er strekningen mellom to stasjoner." },
+  { id:"1-012", q:"Hva er en 'blokkstrekning'?", img:null, options:["Strekningen mellom to blokksignaler, eller mellom et blokksignal og et hovedsignal","En strekning som er blokkert for trafikk","En strekning med kun ett spor","En strekning med midlertidig hastighetsnedsettelse"], correct:0, explanation:"En blokkstrekning er strekningen mellom to blokksignaler, eller mellom et blokksignal og et hovedsignal." },
+  { id:"1-013", q:"Hva er definisjonen av 'tog' i TJN?", img:null, options:["Ethvert kjøretøy som beveger seg på skinner","Trekkraftkjøretøy, med eller uten vogner, som har rute eller er beordret av togleder","Kun kjøretøy med passasjerer","Kun kjøretøy med mer enn 100 tonns vekt"], correct:1, explanation:"Et tog er et trekkraftkjøretøy, med eller uten vogner, som har rute eller er beordret av togleder." },
+  { id:"1-014", q:"Hva er 'skifting' i henhold til TJN?", img:null, options:["Flytting av kjøretøy på stasjon uten at det kjøres som tog","Bytte av lokomotivfører","Endring av sporvekslers stilling","Bytte av vogner mellom to tog under drift"], correct:0, explanation:"Skifting er flytting av kjøretøy på stasjonsområdet uten at det kjøres som tog." },
+  { id:"1-015", q:"Hva er en 'togvei'?", img:null, options:["Ruten toget følger mellom avgangs- og endestasjon","Den delen av spornettet som er sikret og klarert for togets kjøring gjennom en stasjon","Selve skinnegangen","Veien parallelt med jernbanelinjen for vedlikeholdskjøretøy"], correct:1, explanation:"Togvei er den sikrede og klarerte delen av spornettet for togets kjøring gjennom en stasjon." },
+  { id:"1-016", q:"Hva betyr det at en sporveksel er i 'normalstilling'?", img:null, options:["At den er stilt for kjøring rett fram (normal retning)","At den er låst og ikke kan legges om","At den nylig er vedlikeholdt","At den er sentralstyrt fra togledersentralen"], correct:0, explanation:"Normalstilling betyr at sporvekselen er stilt for kjøring i normal retning, typisk rett fram." },
+  { id:"1-017", q:"Hva er en 'hovedsikkerhetsvakt' (HSV)?", img:null, options:["Person med ansvar for brannvern på tog","Person som koordinerer sikkerheten ved arbeid i spor","Person som bevokter planoverganger","Personen med høyest rang i et jernbaneforetak"], correct:1, explanation:"HSV er personen som koordinerer sikkerheten ved arbeid i og nær sporet." },
+  { id:"1-018", q:"Hva menes med 'kjøretillatelse'?", img:null, options:["Togets tillatelse fra jernbanetilsynet til å operere","Førerens sertifikat for å kjøre tog","Tillatelsen som gis til et tog for å kjøre inn på eller over en strekning","Tillatelsen gitt av passasjerer til å starte toget"], correct:2, explanation:"Kjøretillatelse er tillatelsen som gis til et tog for å kjøre inn på eller over en bestemt strekning." },
+  { id:"1-019", q:"Hva menes med 'ombordansvarlig'?", img:null, options:["Den som har ansvaret for passasjerene om bord i toget","Føreren i trekkraftkjøretøyet","Konduktøren som kontrollerer billetter","Sikkerhetsvakten i togsettet"], correct:0, explanation:"Ombordansvarlig er den som har ansvaret for passasjerene om bord i toget." },
+  { id:"1-020", q:"Hva er 'strekningsbeskrivelsen for jernbanenettet' (SJN)?", img:null, options:["En turistguide over jernbanestrekninger","Et dokument som beskriver de spesifikke forholdene på hver strekning og stasjon","En teknisk håndbok for signalanlegg","Et opplæringsdokument for nye førere"], correct:1, explanation:"SJN beskriver de spesifikke forholdene på hver strekning og stasjon." },
+  { id:"1-021", q:"Hva betyr TSI-OPE i sammenheng med TJN?", img:null, options:["Teknisk standardiseringsinstruks for operatører i Europa","TSI drift og trafikkstyring – europeiske driftskrav fra jernbanepakken","Total sikkerhetsinstruks for overordnet planlegging","Tidsbasert styringsinstruks for operativ effektivitet"], correct:1, explanation:"TSI-OPE refererer til TSI drift og trafikkstyring, som inneholder europeiske driftskrav." },
+  { id:"1-022", q:"Gjelder TJN også for infrastrukturforvalters kjøring?", img:null, options:["Nei, TJN gjelder kun for jernbaneforetak","Ja, regler for jernbaneforetak gjelder også for infrastrukturforvalters kjøring","Kun dersom infrastrukturforvalter har egen lisens","Kun for kjøring med hastighet over 40 km/t"], correct:1, explanation:"Regler for jernbaneforetak gjelder også for infrastrukturforvalters kjøring av tog og skift i forbindelse med drift og vedlikehold." },
+  { id:"1-023", q:"Hvor publiseres TJN?", img:null, options:["Kun i Lovdata","I Operativ regelverksamling (ORV)","I Norsk Standard (NS)","Kun som internt notat i Bane NOR"], correct:1, explanation:"Trafikkreglene publiseres i Operativ regelverksamling (ORV)." },
+  { id:"1-024", q:"Hva betyr merking «Ø» på ERTMS-bestemmelser i TJN?", img:null, options:["At bestemmelsen gjelder østgående trafikk","At bestemmelsen kun gjelder ERTMS på Østfoldbanens østre linje","At bestemmelsen er ønsket men ikke obligatorisk","At bestemmelsen er en overgangsbestemmelse"], correct:1, explanation:"«Ø» markerer ERTMS-bestemmelser som bare gjelder for ERTMS på Østfoldbanens østre linje." },
+  { id:"1-025", q:"Hva innebærer kravet om at tog må være kompatibelt med jernbaneinfrastrukturen?", img:null, options:["At toget er malt i riktig farge","At togsammensetningen passer til infrastrukturen (profil, aksellast, osv.)","At toget har tilstrekkelig antall seter","At toget har riktig togradiofrekvens"], correct:1, explanation:"Et tog skal bare kjøre på en strekning dersom togsammensetningen er kompatibel med jernbaneinfrastrukturen." },
+  { id:"1-026", q:"Hva skal gjøres dersom det er kjent at et tog ikke kan kjøre gjennom en strekning sikkert?", img:null, options:["Toget skal kjøre med halv hastighet","Toget skal forhindres fra å fortsette til nødvendige tiltak er utført","Toget skal snu og kjøre tilbake","Fører avgjør selv om toget kan passere"], correct:1, explanation:"Et tog skal forhindres fra å fortsette dersom det er kjent eller antatt at det ikke kan kjøre sikkert, inntil nødvendige tiltak er utført." },
+  { id:"1-027", q:"Hva betyr det at en sporveksel er 'sentralstilt'?", img:null, options:["At den er stilt fra et sentralt stillverk eller toglederplass","At den alltid står i midtstilling","At den er den midterste sporvekselen på stasjonen","At den er stilt av to personer samtidig"], correct:0, explanation:"En sentralstilt sporveksel betjenes fra et sentralt stillverk." },
+  { id:"1-028", q:"Hva er en 'grensestasjon' i TJN?", img:null, options:["En stasjon på landegrensen","En stasjon som danner grensen mellom ulike driftsformer (f.eks. fjernstyring og togmelding)","En stasjon som er grensen for et jernbaneforetaks kontrakt","Den siste stasjonen på en jernbanelinje"], correct:1, explanation:"Grensestasjon er en stasjon som danner grensen mellom ulike driftsformer." },
+  { id:"1-029", q:"Hva menes med 'signalgiver' i TJN?", img:null, options:["En person som installerer signalutstyr","En person som gir håndsignaler i forbindelse med togframføring eller skifting","Togleder som gir kjørsignal via fjernkontroll","En automatisk enhet som styrer lyssignaler"], correct:1, explanation:"Signalgiver er en person som gir håndsignaler i forbindelse med togframføring eller skifting." },
+  { id:"1-030", q:"Hva er 'kunngjøring' i TJN?", img:null, options:["Informasjon til media om togforsinkelser","Informasjon om endringer av betydning for togframføringen","Annonsering over høyttaler på stasjoner","Oppslag på stasjonens informasjonstavle for passasjerer"], correct:1, explanation:"Endringer av betydning for togframføringen kunngjøres til relevant personale." },
+  { id:"1-031", q:"Hva betyr 'hensatt' i jernbanesammenheng?", img:null, options:["Et tog som er forsinket","Et tog som er parkert og forlatt av personale (avhengt fra ruteplan)","Et tog som venter på reparasjon i verksted","Et tog som har nødstoppet på linjen"], correct:1, explanation:"Et hensatt tog er et tog som er parkert og ikke lenger aktivt i ruteplanen." },
+  { id:"1-032", q:"Hva er en 'driftsbanegård'?", img:null, options:["Hovedkvarteret for Bane NOR","Et område der det ikke utføres person- eller godstrafikk","En stasjon med flere enn 10 spor","Et område der tog testes etter vedlikehold"], correct:1, explanation:"Driftsbanegård er et område der det ikke utføres person- eller godstrafikk." },
+  { id:"1-033", q:"Hva innebærer 'strekning med fjernstyring'?", img:null, options:["At togleder styrer trafikken sentralt – stasjonene er normalt ikke betjent lokalt","At togene kjører automatisk uten fører","At signalene styres av føreren selv","At kun fjerntrafikk (ikke lokaltog) kan kjøre på strekningen"], correct:0, explanation:"Strekning med fjernstyring betyr at togleder styrer trafikken sentralt fra togledersentralen." },
+  { id:"1-034", q:"Hva innebærer 'strekning med togmelding'?", img:null, options:["At togene melder sin posisjon via GPS","At togekspeditørene melder togene mellom stasjonene med en avtalt meldingsprosedyre","At all kommunikasjon skjer via meldingsapper","At togene sender automatiske statusmeldinger til førerpanelet"], correct:1, explanation:"Strekning med togmelding betyr at togekspeditørene melder togene mellom stasjonene." },
+  { id:"1-035", q:"Hva menes med 'sporveksel' i TJN?", img:null, options:["Et krysningspunkt for vei og jernbane","En innretning i sporet som gjør det mulig å lede kjøretøy fra ett spor til et annet","Et vekslingspunkt for strømforsyningen","Et punkt der to jernbanelinjer krysser hverandre i plan"], correct:1, explanation:"En sporveksel er en innretning i sporet som gjør det mulig å lede kjøretøy fra ett spor til et annet." },
+  { id:"1-036", q:"Hva menes med 'motliggende sporveksel'?", img:null, options:["En sporveksel som toget kjører inn i fra tunga (spissen)","En sporveksel som står i feil stilling","En sporveksel som mottar tog fra motsatt retning","En sporveksel som er skadet og ligger feil vei"], correct:0, explanation:"En motliggende sporveksel er en sporveksel som toget kjører inn i fra tungesiden." },
+  { id:"1-037", q:"Hva er et 'trekkraftkjøretøy'?", img:null, options:["Kun elektriske lokomotiver","Et kjøretøy med egen drivkraft som kan trekke eller skyve andre kjøretøy","Kun diesellokomotiver med mer enn 2000 hk","Et kjøretøy som utelukkende brukes for vedlikehold"], correct:1, explanation:"Et trekkraftkjøretøy er et kjøretøy med egen drivkraft." },
+  { id:"1-038", q:"Hva er en 'rute' i TJN-sammenheng?", img:null, options:["Kartbeskrivelsen av en jernbanelinje","Den planlagte tidsplanen og strekningen for et tog, med nødvendige opplysninger","Førerens personlige kjøreplan","Passasjerenes reiserute fra A til B"], correct:1, explanation:"Ruten er den planlagte tidsplanen og strekningen for et tog, inkludert nødvendige opplysninger." },
+  { id:"1-039", q:"Hva betyr 'sikringsanlegg' på en stasjon?", img:null, options:["Vakthold og overvåkningskameraer","Teknisk anlegg som sikrer togveier, sporveksler og signaler mot farlige situasjoner","Brannvernanlegg i stasjonsbygningen","Gjerder og bommer som hindrer uvedkommende adgang"], correct:1, explanation:"Sikringsanlegg er tekniske anlegg som sikrer togveier, sporveksler og signaler mot farlige situasjoner." },
+  { id:"1-040", q:"Hva er et 'ekstratog'?", img:null, options:["Et tog med spesialfrakt","Et tog som ikke er i den faste ruteplanen, men som er beordret for en spesifikk kjøring","Et reservetog som står klart i tilfelle forsinkelser","Et historisk damptog som kjører turistturer"], correct:1, explanation:"Et ekstratog er et tog som ikke er i den faste ruteplanen, men som er beordret for en spesifikk kjøring." }
+];
+
+const chapter3Questions = [
+  { id:"3-001", q:"Hvem har det overordnede ansvaret for gjennomføring av skifting?", img:null, options:["Føreren","Skiftelederen","Toglederen","Togekspeditøren"], correct:1, explanation:"Skiftelederen har ansvaret for gjennomføring av skifting." },
+  { id:"3-002", q:"Hva er skiftelederens viktigste oppgave?", img:null, options:["Å holde oversikt over vognenes vekt","Å sikre at skiftingen foregår på en sikker måte","Å sørge for at togene er i rute","Å kontrollere billetter på godsvogner"], correct:1, explanation:"Skiftelederens viktigste oppgave er å sikre at skifting foregår sikkert." },
+  { id:"3-003", q:"Maks hastighet for skift som skyves (med unntak)?", img:null, options:["15 km/t","30 km/t","40 km/t","50 km/t"], correct:1, explanation:"Maks hastighet for skift som skyves er normalt 30 km/t." },
+  { id:"3-004", q:"Når kan det skiftes forbi innkjørhovedsignal som viser stopp?", img:null, options:["Aldri","Kun med tillatelse fra togleder eller togekspeditør","Kun om natten","Kun ved bruk av håndsignal fra signalgiver"], correct:1, explanation:"Skifting forbi innkjørhovedsignal som viser stopp krever tillatelse fra togleder eller togekspeditør." },
+  { id:"3-005", q:"Hva skal skiftelederen forsikre seg om før skifting starter?", img:null, options:["At alle passasjerer har forlatt plattformen","At tillatelse er gitt og at skifteveien er klar","At det er dagslys","At alle vognene er tomme"], correct:1, explanation:"Skiftelederen skal forsikre seg om at tillatelse er gitt og skifteveien er klar." },
+  { id:"3-006", q:"Hva er maks hastighet for skift som trekkes?", img:null, options:["30 km/t","40 km/t","50 km/t","60 km/t"], correct:1, explanation:"Maks hastighet for skift som trekkes er normalt 40 km/t." },
+  { id:"3-007", q:"Kan det skiftes over planoverganger?", img:null, options:["Ja, alltid uten restriksjoner","Nei, aldri","Ja, men kun med tillatelse og sikring av planovergangen","Kun på dagtid"], correct:2, explanation:"Skifting over planovergang krever tillatelse og sikring." },
+  { id:"3-009", q:"Hvem gir tillatelse til skifting på stasjon med fjernstyring?", img:null, options:["Togekspeditøren","Skiftelederen selv","Toglederen","Ombordansvarlig"], correct:2, explanation:"På stasjon med fjernstyring gir toglederen tillatelse til skifting." },
+  { id:"3-010", q:"Hva er hensikten med 'skiftegrense'-skiltet?", img:null, options:["Angir grensen for stasjonens sporområde","Angir yttergrensen for tillatt skifting uten særskilt tillatelse","Angir grensen for stasjonens plattformområde","Angir grensen mellom to jernbaneforetak"], correct:1, explanation:"Skiftegrense angir yttergrensen for skifting uten særskilt tillatelse." },
+  { id:"3-011", q:"Hva skal fører i skift gjøre ved utydelig signal?", img:null, options:["Fortsette med lav hastighet","Stoppe og undersøke forholdet","Kontakte passasjerer for bekreftelse","Ignorere og kjøre videre"], correct:1, explanation:"Ved utydelig signal skal skift stoppe og undersøke forholdet." },
+  { id:"3-012", q:"Hvor skal bremsesko plasseres ved sikring av skift?", img:null, options:["Under siste vogn i skiftet","Slik at skiftet ikke kan rulle ut i trafikkert spor","Under lokomotivets forhjul","I sporvekselen nærmest skiftet"], correct:1, explanation:"Bremsesko plasseres slik at skiftet ikke kan rulle ut i trafikkert spor." },
+  { id:"3-013", q:"Hva er 'frigiving' i forbindelse med skifting?", img:null, options:["At skiftelederen er ferdig for dagen","At togleder eller togekspeditør gir fri for sporveksler og signal for skifting","At vognene er frigitt for lasting","At personale frigjøres fra vakt"], correct:1, explanation:"Frigiving betyr at togleder/togekspeditør gir fri sporveksler og signaler for skifting." },
+  { id:"3-015", q:"Hva er kravet til kommunikasjon mellom skifteleder og fører?", img:null, options:["Kun skriftlig via formularer","Radiokommunikasjon eller håndsignaler","Kun via mobiltelefon","Ingen krav – de avgjør selv"], correct:1, explanation:"Kommunikasjon kan skje via radio eller håndsignaler." },
+  { id:"3-016", q:"Hva gjelder for skifting med personvogner som inneholder passasjerer?", img:null, options:["Det er forbudt","Særlige forsiktighetsregler gjelder for sikkerhet for passasjerene","Det er kun tillatt på store stasjoner","Det krever politieskorte"], correct:1, explanation:"Særlige forsiktighetsregler gjelder for skifting med passasjerer om bord." },
+  { id:"3-017", q:"Hva skal man gjøre med løse vogner som kan rulle under skifting?", img:null, options:["La dem stå – de stopper av seg selv","Sikre dem med bremsesko, håndbremser eller lignende tiltak","Koble dem til nærmeste lok","Melde fra til togekspeditør som overvåker dem"], correct:1, explanation:"Løse vogner skal sikres med bremsesko, håndbremser eller lignende." },
+  { id:"3-018", q:"Hvilken side av sporet skal signalgiveren stå på under skifting?", img:null, options:["Alltid på venstre side","Den siden der føreren kan se signalgiveren best","Alltid på høyre side","Alltid mellom sporene"], correct:1, explanation:"Signalgiveren skal stå slik at den føreren skal oppfatte signalet, kan se det." },
+  { id:"3-019", q:"Hva betyr håndsignalet «Sakte» for skift?", img:null, options:["Stopp umiddelbart","Reduser hastigheten","Øk hastigheten forsiktig","Vent i 30 sekunder"], correct:1, explanation:"Håndsignalet «Sakte» betyr at skiftet skal redusere hastigheten." },
+  { id:"3-020", q:"Hva betyr håndsignal «Kjør fram» for skift?", img:null, options:["Skiftet skal bakke","Skiftet kan kjøre framover i den retningen signalgiveren viser","Skiftet skal stoppe og vente på nytt signal","Skiftet kan kjøre med full hastighet"], correct:1, explanation:"«Kjør fram» betyr at skiftet kan kjøre framover." },
+  { id:"3-021", q:"Hva betyr håndsignal «Bakk» for skift?", img:null, options:["Skiftet skal kjøre framover","Skiftet skal stoppe","Skiftet skal kjøre bakover","Skiftet skal endre spor"], correct:2, explanation:"«Bakk» betyr at skiftet skal kjøre bakover." },
+  { id:"3-022", q:"Hva skal gjøres ved avslutning av skifting?", img:null, options:["Skifteleder melder fra om at skiftingen er avsluttet","Føreren forlater lokomotivet umiddelbart","Togleder sletter skiftet fra systemet automatisk","Ingen spesiell handling – skiftingen anses avsluttet når bevegelsen stopper"], correct:0, explanation:"Skifteleder melder fra om at skiftingen er avsluttet." },
+  { id:"3-023", q:"Maks hastighet for skift over sporveksler i avvik?", img:null, options:["10 km/t","Avhenger av sporvekselens konstruksjon, men det er angitte grenser","40 km/t","Ubegrenset så lenge føreren er forsiktig"], correct:1, explanation:"Hastigheten over sporveksler i avvik avhenger av sporvekselens konstruksjon." },
+  { id:"3-024", q:"Hvem avgjør om det er trygt å krysse et spor under skifting?", img:null, options:["Skiftelederen","Passasjerer som krysser sporet","Toglederen alene","Enhver person som ser at det er klart"], correct:0, explanation:"Skiftelederen avgjør om det er trygt å krysse spor under skifting." },
+  { id:"3-025", q:"Hva er 'sikkerhetsavstand' i forbindelse med skifting?", img:null, options:["Avstanden mellom to skift som kjører samtidig","Avstanden fra skiftegrense til innkjørhovedsignal","Avstanden som sikrer at skiftet ikke kommer i konflikt med tog","Avstanden mellom bremsesko og skiftet"], correct:2, explanation:"Sikkerhetsavstand sikrer at skiftet ikke kommer i konflikt med togtrafikk." },
+  { id:"3-026", q:"Når skal fører bruke togfløyten under skifting?", img:null, options:["Aldri – togfløyten brukes kun for tog","Når det er nødvendig for å varsle personer langs sporet","Kun ved passering av planoverganger","Hver gang skiftet starter bevegelse"], correct:1, explanation:"Togfløyten brukes under skifting for å varsle personer langs sporet ved behov." },
+  { id:"3-027", q:"Hva skjer dersom skifteleder mister kontakt med fører under pågående skifting?", img:null, options:["Skiftet skal stoppe","Skiftet kan fortsette med 10 km/t","Skiftet skal kjøre til nærmeste hovedsignal","Skiftet reverserer til utgangspunktet"], correct:0, explanation:"Skiftet skal stoppe dersom kontakten mellom skifteleder og fører brytes." },
+  { id:"3-028", q:"Gjelder reglene om signaler også for skifting?", img:null, options:["Nei, skifting har helt egne signalregler","Ja, signalreglene i kapittel 8 gjelder også for skifting","Bare dvergsignaler gjelder for skifting","Kun håndsignaler gjelder for skifting"], correct:1, explanation:"Signalreglene i kapittel 8 gjelder også for skifting." },
+  { id:"3-029", q:"Hva kreves for skifting i spor der det også foregår arbeid?", img:null, options:["Det er forbudt å skifte der det er arbeid","Koordinering mellom skifteleder og hovedsikkerhetsvakt","Politiets tillatelse","Skriftlig samtykke fra alle som arbeider i sporet"], correct:1, explanation:"Det kreves koordinering mellom skifteleder og hovedsikkerhetsvakt." },
+  { id:"3-030", q:"Maks hastighet ved skifting forbi personer i eller nær sporet?", img:null, options:["Normal skiftehastighet – personene bør flytte seg","Hastigheten skal reduseres slik at det kan stoppes om nødvendig","40 km/t","Det er alltid forbudt å skifte forbi personer i sporet"], correct:1, explanation:"Hastigheten skal reduseres slik at det kan stoppes om nødvendig." },
+  { id:"3-031", q:"Hva gjelder for bruk av bremsene under skifting?", img:null, options:["Bremsene skal alltid være fullt tilsatt","Skifteleder skal sørge for at tilstrekkelig bremsekraft er tilgjengelig","Kun parkeringsbremsen brukes","Bremsene brukes ikke – bremsesko er eneste bremsmiddel"], correct:1, explanation:"Skifteleder skal sørge for at tilstrekkelig bremsekraft er tilgjengelig." },
+  { id:"3-032", q:"Når kan et skift kjøre inn på et spor som er belagt med et annet skift?", img:null, options:["Aldri – kun ett skift per spor","Når det er sikret at det andre skiftet er stoppet og at det er trygt","Kun med tillatelse fra jernbaneforetakets ledelse","Kun på dagtid med god sikt"], correct:1, explanation:"Et skift kan kjøre inn på belagt spor når det er sikret at det er trygt." },
+  { id:"3-033", q:"Hva er signalet for å stoppe et skift raskt i en nødsituasjon?", img:null, options:["Ett langt støt i fløyten","Enhver hurtig bevegelse med signal på tvers av sporet","Tre korte fløytesignaler","Vifting med gul flagg over hodet"], correct:1, explanation:"Nødsignal er enhver hurtig bevegelse med signal på tvers av sporet." },
+  { id:"3-034", q:"Kan skifting foregå på linjen mellom to stasjoner?", img:null, options:["Ja, uten begrensninger","Normalt ikke, med mindre det er gitt særskilt tillatelse","Kun for arbeidstog","Kun på enkeltsporet strekning"], correct:1, explanation:"Skifting på linjen krever normalt særskilt tillatelse." },
+  { id:"3-035", q:"Hva gjelder for belysning av skift om natten?", img:null, options:["Skift trenger ikke belysning","Skift skal ha frontlys og baklys","Kun frontlys er påkrevet for skift","Kun refleks på siste vogn er tilstrekkelig"], correct:1, explanation:"Skift skal ha frontlys og baklys." },
+  { id:"3-036", q:"Hva er reglene for bruk av jernbaneradio under skifting?", img:null, options:["Radio er forbudt under skifting","All kommunikasjon skal følge fastsatte kommunikasjonsregler","Kun tekst-meldinger er tillatt","Radio brukes kun ved nødsituasjoner"], correct:1, explanation:"All kommunikasjon skal følge fastsatte kommunikasjonsregler." },
+  { id:"3-037", q:"Hvem kan gi tillatelse til å skyve skift ut over skiftegrense?", img:null, options:["Skiftelederen selv","Togleder eller togekspeditør","Jernbaneforetakets driftsleder","Enhver person som ser at det er klart"], correct:1, explanation:"Togleder eller togekspeditør gir tillatelse til skifting ut over skiftegrense." },
+  { id:"3-038", q:"Hva betyr det at et skift skal «sikres» på et spor?", img:null, options:["At det er forsikret mot skader","At det er fastlåst slik at det ikke kan komme i utilsiktet bevegelse","At det er registrert i systemet","At det har vaktpersonale ved seg til enhver tid"], correct:1, explanation:"Å sikre et skift betyr å forhindre utilsiktet bevegelse." },
+  { id:"3-039", q:"Hva gjelder for kopling og frakopling av vogner under skifting?", img:null, options:["Det utføres alltid av automatiske systemer","Personale skal ikke befinne seg mellom vognene mens de er i bevegelse","Kopling utføres kun av føreren fra førerrommet","Ingen spesielle regler gjelder"], correct:1, explanation:"Personale skal ikke befinne seg mellom vognene mens de er i bevegelse." },
+  { id:"3-040", q:"Kan flere skift foregå samtidig på samme stasjon?", img:null, options:["Nei, kun ett skift om gangen","Ja, men det krever koordinering og at det ikke oppstår farlige situasjoner","Kun dersom stasjonene har mer enn 6 spor","Kun med Bane NORs hovedkontorets godkjenning"], correct:1, explanation:"Flere skift kan foregå samtidig, men krever koordinering." }
+];
+
+/* ═══════════════════════════════════════════════════════════════
+   CHAPTER 9 QUESTIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+const chapter9Questions = [
+  {id:"9-001", q:"Hvilken hastighet kan man ha i nabospor dersom man har satt opp fysisk barriere?", img:null, options:["Linjehastighet","130","80","40"], correct:0, explanation:"Ved fysisk barriere kan linjehastighet opprettholdes i nabospor."},
+  {id:"9-002", q:"Hvilken hastighet kan man ha i nabospor dersom man har satt opp markeringsgjerde?", img:null, options:["Linjehastighet","130","80","40"], correct:1, explanation:"Ved markeringsgjerde er tillatt hastighet 130 km/t i nabospor."},
+  {id:"9-003", q:"Hvilken hastighet kan man ha i nabospor dersom man har satt opp sperrebånd?", img:null, options:["Linjehastighet","130","80","40"], correct:2, explanation:"Ved sperrebånd er tillatt hastighet 80 km/t i nabospor."},
+  {id:"9-004", q:"Skal TXP eller togleder varsles om man skal bytte hovedsikkerhetsvakt underveis i arbeidet?", img:null, options:["Ja","Nei, så lenge han er godkjent hsv er det greit","Nei, ikke hvis han står en eller annen plass i kunngjøringen","Nei"], correct:0, explanation:"TXP eller togleder må varsles ved bytte av hovedsikkerhetsvakt."},
+  {id:"9-005", q:"Hva brukes for å sikre arbeidsområder som avgrenser et arbeid på strekning med akseltellere?", img:null, options:["Nøkkel for sikring eller håndholdt terminal","Kontaktmagneter på skinnestrengen","Sporsperrer i begge ender av området","Signal 1A/1B \"Stopp\" plassert i sporet"], correct:0, explanation:"Kilde: orv.banenor.no, TJN Kapittel 9. Alle arbeidsområder som avgrenser arbeidet skal sikres med nøkkel for sikring eller håndholdt terminal."},
+  {id:"9-006", q:"Hva kjennetegner arbeidsformen \"Avstengt område\" når det gjelder styring og dialog etter etablering?", img:null, options:["Arbeidet har ikke en fører eller hovedsikkerhetsvakt som har dialog med togleder/togekspeditør","Hovedsikkerhetsvakten må holde kontinuerlig radiokontakt med togleder","Arbeidet ledes utelukkende av lokal sikkerhetsvakt (LSV)","Det kreves to hovedsikkerhetsvakter med uavhengig dialog"], correct:0, explanation:"Kilde: orv.banenor.no, TJN Kapittel 9. Når avstengt område er etablert har ikke arbeidet en fører eller hovedsikkerhetsvakt som har dialog med togleder/togekspeditør."},
+  {id:"9-007", q:"Hva skjer med myndigheten til en togekspeditør på en stasjon når stasjonen blir en del av et anleggsområde-jernbane?", img:null, options:["Stasjonen er en integrert del av anleggsområdet, og togekspeditøren har ingen myndighet på selve stasjonen","Togekspeditøren overtar rollen som hovedsikkerhetsvakt for hele anleggsområdet","Togekspeditøren og hovedsikkerhetsvakten deler på myndigheten","Togekspeditøren har fortsatt full myndighet over alle sporveksler inne på stasjonen"], correct:0, explanation:"Kilde: orv.banenor.no, TJN Kapittel 9. Når en stasjon blir en del av et anleggsområde, er stasjonen en integrert del av anleggsområdet. Togekspeditøren på en slik stasjon har ingen myndighet på denne stasjonen."},
+  {id:"9-008", q:"Hvordan sperres et sidespor for arbeid i spor på en strekning med togmelding?", img:null, options:["Ved at hele blokkstrekningen som sidesporet ligger på sperres","Ved at togekspeditøren låser den lokale sporvekselen til sidesporet","Ved å utplassere kontaktmagneter i avgreningen til sidesporet","Ved at togleder legger inn en digital sperre i det sentrale systemet"], correct:0, explanation:"Kilde: orv.banenor.no, TJN Kapittel 9. På strekning med togmelding sperres sidespor ved at hele blokkstrekningen sperres."},
+  {id:"9-009", q:"Hva er definisjonen av \"Leder for kobling\" (LFK) i henhold til TJN?", img:null, options:["Utpekt person som har ansvar for at nødvendige koblinger i kontaktledningsanlegget blir utført på en sikkerhetsmessig forsvarlig måte","Personen som fysisk kobler sammen jernbanevogner under skifting","Lederen for det lokale strømforsyningsselskapet","Hovedsikkerhetsvaktens stedfortreder ved elsikkerhetsarbeid"], correct:0, explanation:"Kilde: orv.banenor.no, TJN Kapittel 9. Leder for kobling (LFK) er en utpekt person som har fått ansvar for at nødvendige koblinger i kontaktledningsanlegget blir utført på en sikkerhetsmessig forsvarlig måte."},
+  {id:"9-010", q:"Hva er forskjellen på et \"disponerende arbeidstog\" og et \"kjørende arbeidstog\"?", img:null, options:["Et disponerende arbeidstog skal disponere et nærmere angitt område, mens et kjørende skal kjøre over en strekning og kan iverksette arbeid etter avtale","Et disponerende arbeidstog brukes kun på stasjoner, mens et kjørende kun brukes på linjen","Et disponerende arbeidstog ledes av togleder, mens kjørende arbeidstog ledes av føreren alene","Det er ingen forskjell, det er kun to navn på samme arbeidsform"], correct:0, explanation:"Kilde: orv.banenor.no, TJN Kapittel 9. Disponerende arbeidstog: et arbeidstog som skal disponere et nærmere angitt område. Kjørende arbeidstog: et arbeidstog som skal kjøre over en strekning og som kan iverksette arbeid etter avtale."},
+  {id:"9-011", q:"Hvilken ordlyd skal hovedsikkerhetsvakten benytte ved avslutning av arbeid i spor der HSV selv har fjernet sikringen?", img:null, options:["«Sikring fjernet, … er klar for tog»","«Arbeidet er avsluttet. … er klar for tog»","«Sperringen opphevet og sikringen fjernet»","«Arbeid ferdig, spor frigis»"], correct:0, explanation:"Kilde: orv.banenor.no, TJN Kapittel 9. Ordlyd for avslutning av arbeid i spor der HSV fjerner sikring: Hovedsikkerhetsvakten: «Sikring fjernet, … er klar for tog»."},
+  {id:"9-012", q:"Kan togleder gi tillatelse til arbeid i spor før hovedsikkerhetsvakten faktisk har satt opp signal 1A/1B «Stopp»?", img:null, options:["Ja, togleder kan gi tillatelse før signalet er satt opp","Nei, togleder må alltid få visuell bekreftelse via kamera eller radio før tillatelse gis","Ja, men kun dersom arbeidet utelukkende foregår i dagslys","Nei, tillatelse gis aldri før alt fysisk utstyr er utplassert i sporet"], correct:0, explanation:"Kilde: orv.banenor.no, TJN Kapittel 9. Der hovedsikkerhetsvakten sikrer arbeidsstedet med signal 1A/1B «Stopp», kan toglederen eller togekspeditøren gi tillatelse til arbeid i spor før hovedsikkerhetsvakten har satt opp signal 1A/1B «Stopp»."},
+  {id:"9-013", q:"Hva må en driftsoperativ kunngjøring for arbeid med arbeidstog beskrive i tillegg til standardinformasjonen (som hvor, når og hvordan)?", img:null, options:["Rute for arbeidstoget, ekstra sikringstiltak og hvilken form for arbeidstog som benyttes","Navn og telefonnummer til alle om bord i arbeidstoget","Nøyaktig drivstofforbruk og utslippsklasse for toget","Togets nøyaktige posisjon oppdatert hvert 15. minutt"], correct:0, explanation:"Kilde: orv.banenor.no, TJN Kapittel 9. Driftsoperativ kunngjøring for arbeidstog skal i tillegg beskrive: rute for arbeidstoget, ekstra sikringstiltak, og hvilken form for arbeidstog som benyttes."},
+  {id:"9-014", q:"Er det tillatt å utvide et arbeidsområde (ved direkte overgang) forbi en stasjon som skal gjøres ubetjent på strekning med togmelding?", img:null, options:["Nei, i slike tilfeller må arbeidet avsluttes før nytt arbeid opprettes","Ja, så lenge togleder informeres om utvidelsen","Ja, men kun dersom det settes ut en lokal sikkerhetsvakt på stasjonen","Ja, stasjonens status har ingen påvirkning på arbeidsområdets utstrekning"], correct:0, explanation:"Kilde: orv.banenor.no, TJN Kapittel 9. På strekning med togmelding kan ikke direkte overgang mellom arbeider gjennomføres forbi en stasjon som skal gjøres ubetjent. I slike tilfeller må arbeidet avsluttes før nytt arbeid opprettes."},
+  {id:"9-015", q:"Hva er definisjonen på en \"Tung motortralle\"?", img:null, options:["Motordrevet arbeidsredskap med skinnehjul som har så stor vekt at det ikke hurtig kan fjernes fra sporet av én person","Et dieseldrevet trekkraftkjøretøy med vekt over 50 tonn","Enhver arbeidsmaskin som krever egen førerlisens","Et kjøretøy konstruert for å kunne kjøres på både vei og skinner"], correct:0, explanation:"Kilde: orv.banenor.no, TJN Kapittel 9. Tung motortralle: Motordrevet arbeidsredskap med skinnehjul som har så stor vekt at det ikke hurtig kan fjernes fra sporet av én person."},
+  {id:"9-016", q:"Hva er definisjonen på et \"Testtog\" i forbindelse med arbeid i spor?", img:null, options:["Tog som benyttes for å teste infrastruktur","Tog som tester nye rutetabeller før de iverksettes","Tog som benyttes til opplæring og eksaminering av nye lokomotivførere","Et tomt passasjertog som kjøres for å sjekke om sporet er glatt"], correct:0, explanation:"Kilde: orv.banenor.no, TJN Kapittel 9. Testtog: Tog som benyttes for å teste infrastruktur."},
+  {id:"9-017", q:"Er det tillatt å sette opp en togvei slik at sikkerhetssonen for togveien strekker seg inn i et sperret og sikret arbeidsområde?", img:null, options:["Nei, det tillates ikke å sikre togvei på en slik måte at sikkerhetssonen strekker seg inn i sperret og sikret område","Ja, så lenge hastigheten i sikkerhetssonen settes ned til 40 km/t","Ja, dersom hovedsikkerhetsvakten gir muntlig samtykke","Ja, forutsatt at arbeiderne varsles via togradio i god tid"], correct:0, explanation:"Kilde: orv.banenor.no, TJN Kapittel 9. Det tillates ikke å sikre togvei på en slik måte at sikkerhetssonen for togvei strekker seg inn i det området som er sperret og sikret."},
+  {id:"9-018", q:"Før toglederen eller togekspeditøren kan gi tillatelse til arbeid, skal de kontrollere flere ting. Hva inngår i dette?", img:null, options:["Den driftsoperative kunngjøringen, togradionummer, HSVs navn, posisjon og anslått tidsbruk","Kjøretøyets akseltrykk, mannskapets hviletid og værvarselet","Antall arbeidere, verktøy som skal brukes og rømningsveier","Siste vedlikeholdsrapport for sporet og kontaktledningens spenning"], correct:0, explanation:"Kilde: orv.banenor.no, TJN Kapittel 9. Dersom arbeidet kan tillates, skal toglederen eller togekspeditøren kontrollere den driftsoperative kunngjøringen, togradionummer, hovedsikkerhetsvaktens navn, posisjon og anslått tidsbruk."},
+  {id:"9-019", q:"Hva menes med kjøretøytypen \"Skinne-/veimaskin\" i forbindelse med arbeid i spor?", img:null, options:["Kjøretøy som er konstruert for å kunne kjøres på og av sporet","Gravemaskin som kun kan kjøre på vanlig vei ved siden av sporet","Spesialtog som bygger ny jernbane","Tung motortralle som ikke kan fjernes fra sporet uten kran"], correct:0, explanation:"Kilde: orv.banenor.no, TJN Kapittel 9. Skinne-/veimaskin: Kjøretøy som er konstruert for å kunne kjøres på og av sporet."},
+  {id:"9-020", q:"Når et arbeid i spor utføres med \"Arbeidstog\", hvor må selve arbeidet foregå?", img:null, options:["Det er krav om at arbeidet foregår i nærheten av arbeidstoget, slik at fører kan ivareta trafikksikkerhet og dialog","Arbeidet kan foregå hvor som helst på stasjonen uavhengig av hvor toget står","Arbeidet må foregå minst 500 meter unna toget for å unngå støy","Det er ingen spesifikke avstandskrav, så lenge alle har radiodekning"], correct:0, explanation:"Kilde: orv.banenor.no, TJN Kapittel 9. Føreren av arbeidstog skal kunne ivareta dialog med togleder/togekspeditør og trafikksikkerheten for arbeidet. Det er derfor krav om at arbeidet foregår i nærheten av arbeidstoget."},
+  {id:"9-021", q:"Må det alltid være en driftsoperativ kunngjøring for opprettelse av anleggsområde-jernbane?", img:null, options:["Ja, det skal alltid være kunngjøring for anleggsområde-jernbane","Nei, det kreves kun dersom arbeidet varer i mer enn 24 timer","Nei, togleder kan gi muntlig tillatelse til anleggsområde uten kunngjøring","Ja, men kun hvis anleggsområdet inkluderer mer enn én stasjon"], correct:0, explanation:"Kilde: orv.banenor.no, TJN Kapittel 9. Det skal alltid være kunngjøring på anleggsområde-jernbane."},
+  {id:"9-022", q:"Hvem har det overordnede ansvaret og myndigheten på en stasjon når den er gjort til en integrert del av et anleggsområde-jernbane?", img:null, options:["Hovedsikkerhetsvakten (HSV)","Togekspeditøren på stasjonen","Toglederen på togledersentralen","Bane NORs driftsdirektør"], correct:0, explanation:"Kilde: orv.banenor.no, TJN Kapittel 9. Når en stasjon blir en del av et anleggsområde er den en integrert del, og hovedsikkerhetsvakten har ansvaret og myndigheten der."}
+];
+
+/* ═══════════════════════════════════════════════════════════════
+   CHAPTER DEFINITIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+const chapters = [
+  {
+    id: "kap8",
+    label: "Kap. 8",
+    title: "Kapittel 8 – Signaler og skilt",
+    subtitle: "Lyssignaler, signalskilt, håndsignaler, togsignaler",
+    totalQuestions: 103,
+    quizSize: 40,
+    randomize: true,
+    questions: chapter8Questions,
+    topics: [
+      "Signalfargenes grunnbetydning og generelle regler",
+      "Hovedsignaler: innkjørhovedsignal, utkjørhovedsignal, blokksignal",
+      "Forsignaler og repetérsignaler",
+      "Dvergsignaler og sporvekselsignaler",
+      "Planovergangssignal og rasvarsling",
+      "Kontaktledningssignaler og hastighetssignaler",
+      "Skilt og orienteringsstolper langs sporet",
+      "Håndsignaler og togfløytesignaler"
+    ]
+  },
+  {
+    id: "kap1",
+    label: "Kap. 1",
+    title: "Kapittel 1 – Generelle bestemmelser og definisjoner",
+    subtitle: "Virkeområde, definisjoner, grunnleggende prinsipper",
+    totalQuestions: 40,
+    quizSize: 40,
+    randomize: true,
+    questions: chapter1Questions,
+    topics: [
+      "TJNs virkeområde og hvem den gjelder for",
+      "Sentrale definisjoner: tog, skift, stasjon, linje, togvei",
+      "Romblokkprinsippet og grunnleggende driftsprinsipper",
+      "Roller: togleder, togekspeditør, fører, HSV, signalgiver",
+      "ERTMS-bestemmelser og TSI-OPE"
+    ]
+  },
+  {
+    id: "kap3",
+    label: "Kap. 3",
+    title: "Kapittel 3 – Skifting",
+    subtitle: "Regler for skiftebevegelser, hastigheter, signaler og sikring",
+    totalQuestions: 38,
+    quizSize: 38,
+    randomize: true,
+    questions: chapter3Questions,
+    topics: [
+      "Skiftelederens ansvar og rolle",
+      "Hastighetsregler for skyving og trekking",
+      "Signaler og kommunikasjon under skifting",
+      "Skiftegrenser og tillatelser",
+      "Sikring av skift og løse vogner"
+    ]
+  },
+  {
+    id: "kap5",
+    label: "Kap. 5",
+    title: "Kapittel 5 – Trafikkstyring",
+    subtitle: "Togledelse, togekspedisjon, kryssinger og ordrer (under utvikling)",
+    totalQuestions: 0,
+    quizSize: 40,
+    randomize: true,
+    questions: [],
+    topics: [
+      "Toglederens ansvar og myndighet",
+      "Togvei, kryssinger og forbikjøring",
+      "Kjøretillatelse og ordrer via formular",
+      "Strekning med fjernstyring vs. togmelding"
+    ]
+  },
+  {
+    id: "kap6",
+    label: "Kap. 6",
+    title: "Kapittel 6 – Kjøring av tog",
+    subtitle: "Regler for fører under togframføring (under utvikling)",
+    totalQuestions: 0,
+    quizSize: 40,
+    randomize: true,
+    questions: [],
+    topics: [
+      "Førerens ansvar og plikter",
+      "Hastighetsregler og bremsing",
+      "Avgang, kjøring og ankomst",
+      "Hjelpelokomotiv og flere trekkraftkjøretøy"
+    ]
+  },
+  {
+    id: "kap9",
+    label: "Kap. 9",
+    title: "Kapittel 9 – Arbeid i spor",
+    subtitle: "Regler for sikkerhet ved arbeid i og nær spor",
+    totalQuestions: 22,
+    quizSize: 22,
+    randomize: true,
+    questions: chapter9Questions,
+    topics: [
+      "Hovedsikkerhetsvaktens rolle",
+      "Anleggsområde og arbeidsbrudd",
+      "Sikkerhetstiltak ved arbeid i spor",
+      "Kommunikasjon og koordinering"
+    ]
+  }
+];
+
+/* ═══════════════════════════════════════════════════════════════
+   APPLICATION STATE & LOGIC
+   ═══════════════════════════════════════════════════════════════ */
+
+let state = {
+  currentChapter: null,
+  quizQuestions: [],
+  currentIndex: 0,
+  score: 0,
+  answers: [], // {questionIndex, selectedOption, isCorrect}
+  answered: false
+};
+
+// ── Build Tabs ──
+function buildTabs() {
+  const header = document.getElementById('tabsHeader');
+  const content = document.getElementById('tabContent');
+  header.innerHTML = '';
+  content.innerHTML = '';
+
+  chapters.forEach((ch, i) => {
+    // Tab button
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn' + (i === 0 ? ' active' : '');
+    btn.textContent = ch.label;
+    btn.onclick = () => switchTab(ch.id);
+    btn.dataset.id = ch.id;
+    header.appendChild(btn);
+
+    // Tab content
+    const card = document.createElement('div');
+    card.className = 'chapter-card' + (i === 0 ? ' active' : '');
+    card.id = 'tab-' + ch.id;
+
+    const available = ch.questions.length > 0;
+    card.innerHTML = `
+      <div class="chapter-info">
+        <h2>${ch.title}</h2>
+        <p class="subtitle">${ch.subtitle}</p>
+        <div class="stat-row">
+          <div class="stat">
+            <div class="label">Spørsmål i databasen</div>
+            <div class="value">${ch.totalQuestions || '—'}</div>
+          </div>
+          <div class="stat">
+            <div class="label">Spørsmål per test</div>
+            <div class="value">${available ? ch.quizSize : '—'}</div>
+          </div>
+          <div class="stat">
+            <div class="label">${ch.randomize ? 'Tilfeldig utvalg' : 'Fast rekkefølge'}</div>
+            <div class="value">${ch.randomize ? 'Ja' : 'Nei'}</div>
+          </div>
+        </div>
+        <ul class="topic-list">
+          ${ch.topics.map(t => `<li>${t}</li>`).join('')}
+        </ul>
+        <button class="btn-start ${available ? '' : 'disabled'}" onclick="startQuiz('${ch.id}')">
+          ${available ? 'Start quiz →' : 'Kommer snart'}
+        </button>
+      </div>
+    `;
+    content.appendChild(card);
+  });
+}
+
+function switchTab(id) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.id === id));
+  document.querySelectorAll('.chapter-card').forEach(c => c.classList.toggle('active', c.id === 'tab-' + id));
+}
+
+// ── Shuffle ──
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ── Randomize Question Options ──
+function randomizeQuestionOptions(question) {
+  const originalCorrectText = question.options[question.correct];
+  const shuffledOptions = shuffle(question.options);
+  const newCorrectIndex = shuffledOptions.indexOf(originalCorrectText);
+  
+  // Returnerer en ren kopi slik at vi ikke ødelegger hoveddatabasen
+  return {
+    ...question,
+    options: shuffledOptions,
+    correct: newCorrectIndex
+  };
+}
+
+// ── Start Quiz ──
+function startQuiz(chapterId) {
+  const ch = chapters.find(c => c.id === chapterId);
+  if (!ch || ch.questions.length === 0) return;
+
+  state.currentChapter = ch;
+  state.currentIndex = 0;
+  state.score = 0;
+  state.answers = [];
+  state.answered = false;
+
+  let selectedQuestions = [];
+  if (ch.randomize) {
+    selectedQuestions = shuffle(ch.questions).slice(0, ch.quizSize);
+  } else {
+    selectedQuestions = [...ch.questions];
+  }
+
+  // Randomiserer alternativene, men lagrer dem trygt i state-objektet
+  state.quizQuestions = selectedQuestions.map(q => {
+    if (ch.randomize) {
+      return randomizeQuestionOptions(q);
+    }
+    // Kopierer over hvis vi ikke randomiserer, for å sikre at logikken er stabil
+    return { ...q, options: [...q.options] };
+  });
+
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('resultScreen').className = 'result-screen';
+  document.getElementById('reviewScreen').className = 'review-screen';
+  document.getElementById('quizScreen').className = 'quiz-screen active';
+
+  renderQuestion();
+}
+
+// ── Render Question ──
+function renderQuestion() {
+  const q = state.quizQuestions[state.currentIndex];
+  const total = state.quizQuestions.length;
+
+  document.getElementById('progressText').textContent = `Spørsmål ${state.currentIndex + 1} av ${total}`;
+  document.getElementById('progressScore').textContent = `${state.score} riktige`;
+  document.getElementById('progressFill').style.width = `${((state.currentIndex) / total) * 100}%`;
+  document.getElementById('qNumber').textContent = `SPØRSMÅL ${state.currentIndex + 1}`;
+  document.getElementById('qText').textContent = q.q;
+
+  // Image
+  const imgWrap = document.getElementById('qImageWrap');
+  if (q.img) {
+    imgWrap.innerHTML = `<img class="question-image" src="${q.img}" alt="Signalbilde"><p class="question-image-caption">Illustrasjon: Se signalbilde ovenfor</p>`;
+  } else {
+    imgWrap.innerHTML = '';
+  }
+
+  // Options
+  const letters = ['A', 'B', 'C', 'D'];
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    container.appendChild(btn);
+  });
+
+  // Reset
+  document.getElementById('explanation').className = 'explanation';
+  document.getElementById('explanation').innerHTML = '';
+  document.getElementById('btnNext').className = 'btn-next';
+  state.answered = false;
+}
+
+// ── Select Answer ──
+function selectAnswer(index) {
+  if (state.answered) return;
+  state.answered = true;
+
+  const q = state.quizQuestions[state.currentIndex];
+  const isCorrect = index === q.correct;
+  if (isCorrect) state.score++;
+
+  state.answers.push({
+    questionIndex: state.currentIndex,
+    selectedOption: index,
+    isCorrect
+  });
+
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach((btn, i) => {
+    btn.classList.add('locked');
+    if (i === q.correct) btn.classList.add('correct');
+    if (i === index && !isCorrect) btn.classList.add('wrong');
+  });
+
+  // Explanation
+  const exp = document.getElementById('explanation');
+  exp.innerHTML = `<strong>${isCorrect ? '✓ Riktig!' : '✗ Feil!'}</strong>${q.explanation}`;
+  exp.className = 'explanation show';
+
+  // Show next button
+  const isLast = state.currentIndex >= state.quizQuestions.length - 1;
+  const nextBtn = document.getElementById('btnNext');
+  nextBtn.textContent = isLast ? 'Se resultater →' : 'Neste spørsmål →';
+  nextBtn.className = 'btn-next show';
+
+  // Update score display
+  document.getElementById('progressScore').textContent = `${state.score} riktige`;
+}
+
+// ── Next Question ──
+document.getElementById('btnNext').onclick = function() {
+  if (state.currentIndex >= state.quizQuestions.length - 1) {
+    showResults();
+  } else {
+    state.currentIndex++;
+    renderQuestion();
+    document.getElementById('questionCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+};
+
+// ── Quit Quiz ──
+document.getElementById('btnQuit').onclick = function() {
+  if (confirm('Er du sikker på at du vil avslutte quizen?')) {
+    backToStart();
+  }
+};
+
+// ── Show Results ──
+function showResults() {
+  const total = state.quizQuestions.length;
+  const pct = Math.round((state.score / total) * 100);
+  const passed = pct >= 80;
+
+  document.getElementById('quizScreen').className = 'quiz-screen';
+
+  const screen = document.getElementById('resultScreen');
+  screen.innerHTML = `
+    <div class="result-card">
+      <div class="result-icon ${passed ? 'pass' : 'fail'}">${passed ? '✓' : '✗'}</div>
+      <h2>${passed ? 'Bestått!' : 'Ikke bestått'}</h2>
+      <p class="result-sub">${state.currentChapter.title} — ${passed ? 'Du klarte kravgrensen på 80%.' : 'Du trenger minst 80% for å bestå.'}</p>
+      <div class="score-display">
+        <div class="score-item">
+          <div class="num green">${state.score}</div>
+          <div class="lbl">Riktige</div>
+        </div>
+        <div class="score-item">
+          <div class="num red">${total - state.score}</div>
+          <div class="lbl">Feil</div>
+        </div>
+        <div class="score-item">
+          <div class="num blue">${pct}%</div>
+          <div class="lbl">Score</div>
+        </div>
+      </div>
+      <div class="percent-bar">
+        <div class="percent-fill ${passed ? 'pass' : 'fail'}" id="percentFill"></div>
+      </div>
+      <p class="percent-text">Kravgrense: 80% (32 av 40 spørsmål)</p>
+      <div class="result-actions">
+        <button class="btn-start" onclick="startQuiz('${state.currentChapter.id}')">Prøv igjen →</button>
+        <button class="btn-review" onclick="showReview()">Se gjennomgang</button>
+        <button class="btn-review" onclick="backToStart()">Tilbake til start</button>
+      </div>
+    </div>
+  `;
+  screen.className = 'result-screen active';
+
+  // Animate bar
+  setTimeout(() => {
+    document.getElementById('percentFill').style.width = pct + '%';
+  }, 100);
+}
+
+// ── Show Review ──
+function showReview() {
+  document.getElementById('resultScreen').className = 'result-screen';
+  const screen = document.getElementById('reviewScreen');
+  const letters = ['A','B','C','D'];
+
+  let html = `<h2 style="margin-bottom:20px;font-size:22px;">Gjennomgang – ${state.currentChapter.title}</h2>`;
+  html += `<button class="btn-review" onclick="backToResults()" style="margin-bottom:20px;">← Tilbake til resultater</button>`;
+
+  state.answers.forEach((ans, i) => {
+    const q = state.quizQuestions[ans.questionIndex];
+    html += `
+      <div class="review-item ${ans.isCorrect ? 'was-correct' : 'was-wrong'}">
+        <div class="ri-header">
+          <span style="font-size:12px;color:var(--bane-gray-dark);">Spørsmål ${i+1}</span>
+          <span class="${ans.isCorrect ? 'badge-correct' : 'badge-wrong'}">${ans.isCorrect ? 'Riktig' : 'Feil'}</span>
+        </div>
+        <p class="ri-q">${q.q}</p>
+        <div class="ri-answer">
+          ${!ans.isCorrect ? `<p>Ditt svar: <strong style="color:var(--bane-error);">${letters[ans.selectedOption]}) ${q.options[ans.selectedOption]}</strong></p>` : ''}
+          <p>Riktig svar: <strong style="color:var(--bane-success);">${letters[q.correct]}) ${q.options[q.correct]}</strong></p>
+          <p style="margin-top:8px;font-style:italic;">${q.explanation}</p>
+        </div>
+      </div>
+    `;
+  });
+
+  html += `<button class="btn-review" onclick="backToResults()" style="margin-top:20px;">← Tilbake til resultater</button>`;
+
+  screen.innerHTML = html;
+  screen.className = 'review-screen active';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function backToResults() {
+  document.getElementById('reviewScreen').className = 'review-screen';
+  showResults();
+}
+
+function backToStart() {
+  document.getElementById('quizScreen').className = 'quiz-screen';
+  document.getElementById('resultScreen').className = 'result-screen';
+  document.getElementById('reviewScreen').className = 'review-screen';
+  document.getElementById('startScreen').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Modal Functionality ──
+document.addEventListener('DOMContentLoaded', function() {
+  const modal = document.getElementById('initialModal');
+  const modalButton = document.getElementById('modalButton');
+
+  // Show modal on page load
+  modal.classList.add('active');
+
+  // Hide modal when button is clicked
+  modalButton.addEventListener('click', function() {
+    modal.classList.remove('active');
+  });
+});
+
+// ── Init ──
+buildTabs();
+</script>
+</body>
+</html>
