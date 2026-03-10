@@ -548,7 +548,9 @@ body {
   box-shadow: var(--shadow);
   padding: 32px;
   margin-bottom: 20px;
+  position: relative;
 }
+
 
 .question-number {
   display: inline-block;
@@ -559,7 +561,16 @@ body {
   padding: 4px 12px;
   border-radius: 20px;
   margin-bottom: 16px;
-  letter-spacing: 0.5px;
+ letter-spacing: 0.5px;
+}
+
+.question-id {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: var(--bane-gray-dark);
+  font-size: 12px;
+  font-weight: 500;
 }
 
 .question-text {
@@ -1036,6 +1047,7 @@ body {
 
     <div class="question-card" id="questionCard">
       <span class="question-number" id="qNumber">SPØRSMÅL 1</span>
+      <span class="question-id" id="qId"></span>
       <p class="question-text" id="qText"></p>
       <div id="qImageWrap"></div>
       <div class="options" id="optionsContainer"></div>
@@ -1691,6 +1703,7 @@ function renderQuestion() {
   document.getElementById('progressFill').style.width = `${(state.answers.length / total) * 100}%`;
   document.getElementById('qNumber').textContent = `SPØRSMÅL ${state.currentIndex + 1}`;
   document.getElementById('qText').textContent = q.q;
+  document.getElementById('qId').textContent = q.id;
 
   // Image
   const imgWrap = document.getElementById('qImageWrap');
