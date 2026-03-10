@@ -752,6 +752,26 @@ body {
   border-color: var(--bane-error);
 }
 
+.btn-report {
+  display: inline-block;
+  padding: 12px 20px;
+  background: var(--bane-error);
+  color: var(--bane-white);
+  text-decoration: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  margin-top: 8px;
+}
+
+.btn-report:hover {
+  background: #dc2626;
+  color: var(--bane-white);
+}
+
 .btn-back {
   padding: 12px 28px;
   background: var(--bane-blue);
@@ -1060,6 +1080,7 @@ body {
     </div>
     <div class="quiz-nav-secondary">
       <button class="btn-quit" id="btnQuit">Avslutt quiz</button>
+      <a class="btn-report" id="btnReport" href="#">Rapporter en feil i dette spørsmålet</a>
     </div>
   </div>
 
@@ -1704,6 +1725,7 @@ function renderQuestion() {
   document.getElementById('qNumber').textContent = `SPØRSMÅL ${state.currentIndex + 1}`;
   document.getElementById('qText').textContent = q.q;
   document.getElementById('qId').textContent = q.id;
+  document.getElementById('btnReport').href = `mailto:joba44@baneservice.no?subject=Rapportert feil ${q.id}`;
 
   // Image
   const imgWrap = document.getElementById('qImageWrap');
