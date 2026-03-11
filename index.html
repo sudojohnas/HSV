@@ -1569,7 +1569,42 @@ let state = {
   answers: [], // {questionIndex, selectedOption, isCorrect}
   answered: false
 };
+// Holder styr på om du er admin eller ikke
+let isAdmin = false;
 
+// Lytter etter ordet "admin" på tastaturet
+let typedKeys = '';
+document.addEventListener('keydown', function(e) {
+  // Ignorer spesialtaster som Shift, Ctrl osv. for å unngå feil
+  if (e.key.length === 1) {
+    typedKeys += e.key.toLowerCase();
+    // Behold bare de 5 siste bokstavene
+    if (typedKeys.length > 5) {
+      typedKeys = typedKeys.slice(-5);
+    }
+    
+    // Sjekk om ordet er stavet
+    if (typedKeys === 'admin') {
+      typedKeys = ''; // Nullstill minnet
+      
+      if (!isAdmin) {
+        const passord = prompt('Skriv inn admin-passord for å låse opp Puggemodus:');
+        if (passord === 'sudojohnas0088') {
+          isAdmin = true;
+          alert('Admin-tilgang aktivert! Puggemodus er nå tilgjengelig.');
+          
+          // Oppdaterer skjermen med en gang slik at knappen dukker opp
+          const activeTab = document.querySelector('.tab-btn.active');
+          if (activeTab) switchTab(activeTab.dataset.id);
+        } else if (passord !== null) {
+          alert('Feil passord.');
+        }
+      } else {
+        alert('Du er allerede logget inn som admin.');
+      }
+    }
+  }
+});
 // ── Build Tabs ──
 function buildTabs() {
   const header = document.getElementById('tabsHeader');
@@ -1630,15 +1665,18 @@ function switchTab(id) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.id === id));
   document.querySelectorAll('.chapter-card').forEach(c => c.classList.toggle('active', c.id === 'tab-' + id));
   
-  // Hent selve diven som holder på puggemodus-knappen
   const puggeScreen = document.querySelector('.puggescreen');
   
   if (puggeScreen) {
-    // Sjekk om fanen vi trykket på er kapittel 8
-    if (id === 'kap8') {
-      puggeScreen.style.display = 'block'; // Vis knappen
+    // Finn ut om kapittelet vi ser på faktisk har spørsmål i databasen
+    const currentChapter = chapters.find(c => c.id === id);
+    const hasQuestions = currentChapter && currentChapter.questions.length > 0;
+
+    // Vis knappen hvis vi er på Kapittel 8, ELLER hvis du er admin og kapittelet har innhold
+    if (id === 'kap8' || (isAdmin && hasQuestions)) {
+      puggeScreen.style.display = 'block'; 
     } else {
-      puggeScreen.style.display = 'none';  // Skjul knappen for alle andre kapitler
+      puggeScreen.style.display = 'none';  
     }
   }
 }
