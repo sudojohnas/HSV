@@ -144,6 +144,30 @@ body {
   background: rgba(255,255,255,0.2);
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.phonetic-toggle {
+  background: transparent;
+  color: var(--bane-white);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255,255,255,0.4);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.phonetic-toggle:hover {
+  background: rgba(255,255,255,0.18);
+  color: var(--bane-white);
+}
+
 /* ═══════════════════════════════════════════
    MAIN CONTAINER
    ═══════════════════════════════════════════ */
@@ -1179,12 +1203,18 @@ body.dark-mode .btn-pugge:hover {
   color: #101c2d;
 }
 
+body.dark-mode .phonetic-toggle {
+  border-color: rgba(255,255,255,0.45);
+}
+
 /* ═══════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════ */
 @media (max-width: 640px) {
   .header-inner { padding: 12px 16px; }
   .header-badge { display: none; }
+  .header-actions { gap: 8px; }
+  .phonetic-toggle { padding: 7px 10px; font-size: 12px; }
   .theme-toggle { padding: 7px 10px; font-size: 12px; }
   .container { padding: 20px 12px 60px; }
   .question-card { padding: 20px; }
@@ -1203,7 +1233,10 @@ body.dark-mode .btn-pugge:hover {
         HSV Quiz
         <span>Basert på Trafikkregler For Jernbanenettet (TJN)</span>
       </div>
-      <button id="themeToggle" class="theme-toggle" type="button" aria-label="Bytt mellom lys og mørk modus">Mørk modus</button>
+      <div class="header-actions">
+        <button class="phonetic-toggle" type="button" onclick="window.location.href='https://fonetisk.hsvkurs.no'">Pugge fonetisk alfabet?</button>
+        <button id="themeToggle" class="theme-toggle" type="button" aria-label="Bytt mellom lys og mørk modus">Mørk modus</button>
+      </div>
     </div>
 </header>
 
