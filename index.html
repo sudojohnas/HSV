@@ -255,6 +255,10 @@ body {
 }
 
 .puggescreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
   text-align: center;
   margin-top: 20px;
   padding-bottom: 20px;
@@ -1263,9 +1267,7 @@ body.dark-mode .phonetic-toggle {
     <div class="tabs-header" id="tabsHeader"></div>
     <div class="tab-content" id="tabContent"></div>
 
-    <div class="puggescreen">
-      <button class="btn-pugge" onclick="startPuggeQuiz()">Ta full test i dette kapittelet med alle spørsmål i rekkefølge</button>
-    </div>
+    <div class="puggescreen" id="puggeScreen"></div>
   </div>
 
   <div id="quizScreen" class="quiz-screen">
@@ -1316,6 +1318,19 @@ body.dark-mode .phonetic-toggle {
       <br><br>Noen av spørsmålene og forklaringene KAN være feil, ettersom at nettsiden er under utvikling enda. Gjerne bruk den røde knappen under oppgavene for å rapportere feil.
     </p>
     <button id="modalButton" class="modal-btn">Jeg skjønner</button>
+  </div>
+</div>
+
+<div id="chapterWarningModal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-icon">⚠️</div>
+    <h2 class="modal-header">VIKTIG!</h2>
+    <p class="modal-text">
+      Spørsmålene i dette kapittelet er ikke gått gjennom så nøye enda, så det kan være feil i noen spørsmål og forklaringer.
+      <br><br>Spørsmålene skal kontrolleres mer nøye straks, men gjerne rapporter feil du finner med den røde knappen under spørsmålsvinduet.
+      <br><br>Takk for tålmodigheten!
+    </p>
+    <button id="chapterWarningButton" class="modal-btn">Jeg skjønner, send meg til quizzen</button>
   </div>
 </div>
 
@@ -1495,10 +1510,16 @@ body.dark-mode .phonetic-toggle {
   {id:"8-105", q:"Hva betyr dette skiltet?", img:"./bilder/105A.png", options:["Signal 105A «Anleggsområde-jernbane begynner» – markerer grensen, oppstilt som fysisk hindring","Signal 105C «Arbeidsbrudd begynner» – grense for arbeidsbrudd på ERTMS-strekning","Signal 69A «Midlertidig nedsatt hastighet» – hastighetsnedsettelse i arbeidsområdet","Signal 108 «Arbeidsområde» – brukes i grensen mellom arbeidsområder"], correct:0, explanation:"«Signal 105A «Anleggsområde-jernbane begynner» og signal 105B «Anleggsområde-jernbane slutter» brukes for å markere grensen for anleggsområde-jernbane på strekning med fjernstyring og strekning med togmelding. Signalene settes opp slik at de utgjør en fysisk hindring mot forbikjøring.» (TJN Kapittel 8, 8.59)"},
   {id:"8-106", q:"Hva betyr dette skiltet?", img:"./bilder/105B.png", options:["Signal 105B «Anleggsområde-jernbane slutter»","Signal 105D «Arbeidsbrudd slutter» – grense for arbeidsbrudd på ERTMS-strekning","Signal 105A «Anleggsområde-jernbane begynner»","Signal 69B «Midlertidig hastighet opphører»"], correct:0, explanation:"Signal 105B «Anleggsområde-jernbane slutter» markerer at anleggsområdet er over. (TJN Kapittel 8, 8.59)"},
   {id:"8-107", q:"Hva betyr dette skiltet?", img:"./bilder/105C.png", options:["Signal 105C «Arbeidsbrudd begynner» – brukes på strekning med ERTMS","Signal 105A «Anleggsområde-jernbane begynner» – brukes på strekning med fjernstyring/togmelding","Signal 105E «Arbeidsområde» – brukes i grensen mellom arbeidsområder","Signal 69A «Midlertidig nedsatt hastighet»"], correct:0, explanation:"«Signal 105C «Arbeidsbrudd begynner» og signal 105D «Arbeidsbrudd slutter» brukes for å markere grensen for arbeidsbrudd på strekning med ERTMS.» Til forskjell fra signal 105A/105B «Anleggsområde-jernbane» som brukes på strekning med fjernstyring og strekning med togmelding. (TJN Kapittel 8, 8.59)"},
+  
+  // ── SIGNALSKILT FOR SKIFT (8.60) ──
+  {id:"8-108", q:"Hvilket signal vises her, og hva betyr det?", img:"./bilder/106A.png", options:["Signal 106A «Stopp for skift» - skift skal stoppe senest foran skiltet","Signal 106B «Varsel om stopp for skift» - det er 150 m til signal 106A «Stopp for skift»","Signal 107 «Sikringsanlegg slutter» - signalet markerer overgang til område som ikke inngår i sikringsanlegget og som kan ha håndstilte sporveksler","Signal 108 «Sikringsanlegg begynner» - signalet markerer overgang til område som inngår i sikringsanlegget"], correct:0, explanation:"Dette er signal 106A «Stopp for skift». Skift skal stoppe senest foran skiltet. På strekning med ERTMS er signalet utstyrt med baliser som stopper trekkraftkjøretøy i skiftemodus (SH-modus). (TJN Kapittel 8, 8.60)"},
+  {id:"8-109", q:"Hvilket signal vises her, og hva betyr det?", img:"./bilder/106B.png", options:["Signal 106A «Stopp for skift» - skift skal stoppe senest foran skiltet","Signal 106B «Varsel om stopp for skift» - det er 150 m til signal 106A «Stopp for skift»","Signal 107 «Sikringsanlegg slutter» - signalet markerer overgang til område som ikke inngår i sikringsanlegget og som kan ha håndstilte sporveksler","Signal 108 «Sikringsanlegg begynner» - signalet markerer overgang til område som inngår i sikringsanlegget"], correct:1, explanation:"Dette er signal 106B «Varsel om stopp for skift». Skiltet kan være satt opp 150 meter foran signal 106A der sikten til 106A er under 150 meter. (TJN Kapittel 8, 8.60)"},
+  {id:"8-110", q:"Hvilket signal vises her, og hva betyr det?", img:"./bilder/107.png", options:["Signal 106A «Stopp for skift» - skift skal stoppe senest foran skiltet","Signal 106B «Varsel om stopp for skift» - det er 150 m til signal 106A «Stopp for skift»","Signal 107 «Sikringsanlegg slutter» - signalet markerer overgang til område som ikke inngår i sikringsanlegget og som kan ha håndstilte sporveksler","Signal 108 «Sikringsanlegg begynner» - signalet markerer overgang til område som inngår i sikringsanlegget"], correct:2, explanation:"Dette er signal 107 «Sikringsanlegg slutter». Signalet kan være satt opp ved overgang til område som ikke inngår i sikringsanlegget og som kan ha håndstilte sporveksler. Det brukes ikke der området er avgrenset med kontrollåst sporveksel eller sporsperre. (TJN Kapittel 8, 8.60)"},
+  {id:"8-111", q:"Hvilket signal vises her, og hva betyr det?", img:"./bilder/108.png", options:["Signal 106A «Stopp for skift» - skift skal stoppe senest foran skiltet","Signal 106B «Varsel om stopp for skift» - det er 150 m til signal 106A «Stopp for skift»","Signal 107 «Sikringsanlegg slutter» - signalet markerer overgang til område som ikke inngår i sikringsanlegget og som kan ha håndstilte sporveksler","Signal 108 «Sikringsanlegg begynner» - signalet markerer overgang til område som inngår i sikringsanlegget"], correct:3, explanation:"Dette er signal 108 «Sikringsanlegg begynner». Signalet markerer overgang til område som inngår i sikringsanlegget. Skift skal stoppe foran skiltet og kan kjøre forbi etter avtale med toglederen eller togekspeditøren. (TJN Kapittel 8, 8.60)"},
 
   // ── TOGFLØYTE (8.98–8.101) ──
-  {id:"8-108", q:"Hva er signal «Tog kommer» i togfløyten (TJN 8.100)?", img:null, options:["Ett langt støt i togfløyten","Ett langt støt etterfulgt av to korte","Tre korte støt etterfulgt av ett langt","Gjentatte korte støt i togfløyten"], correct:0, explanation:"Signal «Tog kommer» er ett langt støt i togfløyten. (TJN Kapittel 8, 8.100)"},
-  {id:"8-109", q:"Hva er signal «Alarm, faresignal» i togfløyten (TJN 8.101)?", img:null, options:["Gjentatte korte støt i togfløyten","Ett langt støt etterfulgt av to korte","Tre korte støt etterfulgt av ett langt","Gjentatte lange støt i togfløyten"], correct:0, explanation:"Signal «Alarm, faresignal» er gjentatte korte støt i togfløyten. (TJN Kapittel 8, 8.101)"}
+  {id:"8-112", q:"Hva er signal «Tog kommer» i togfløyten?", img:null, options:["Ett langt støt i togfløyten","Ett langt støt etterfulgt av to korte","Tre korte støt etterfulgt av ett langt","Gjentatte korte støt i togfløyten"], correct:0, explanation:"Signal «Tog kommer» er ett langt støt i togfløyten. (TJN Kapittel 8, 8.100)"},
+  {id:"8-113", q:"Hva er signal «Alarm, faresignal» i togfløyten?", img:null, options:["Gjentatte korte støt i togfløyten","Ett langt støt etterfulgt av to korte","Tre korte støt etterfulgt av ett langt","Gjentatte lange støt i togfløyten"], correct:0, explanation:"Signal «Alarm, faresignal» er gjentatte korte støt i togfløyten. (TJN Kapittel 8, 8.101)"}
 ];
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1507,47 +1528,30 @@ body.dark-mode .phonetic-toggle {
    ═══════════════════════════════════════════════════════════════ */
 
 const chapter1Questions = [
-
 ];
 
 const chapter3Questions = [
-  // ── TILLATELSER, LEDELSE OG KOMMUNIKASJON (3.1–3.5) ──
-  { id:"3-001", q:"Hva gjelder dersom et skift må kjøres utenfor stasjonsgrensen på strekning med fjernstyring eller togmelding?", img:null, options:["Det skal kjøres som tog","Det kan kjøres som skift dersom togleder eller togekspeditør gir særskilt tillatelse","Det kan kjøres som skift dersom strekningen utenfor stasjonsgrensen er kort","Det kan kjøres som skift dersom hastigheten ikke overstiger 20 km/t"], correct:0, explanation:"Når et skift må kjøres utenfor stasjonsgrensen på strekning med fjernstyring eller togmelding, skal bevegelsen gjennomføres som tog. (TJN Kapittel 3, 3.1 nr. 2)" },
-  { id:"3-002", q:"Hva gjelder for et radiostyrt skiftelokomotiv når reglene omtaler signalgiver?", img:null, options:["Bestemmelsene for signalgiver gjelder tilsvarende for føreren av det radiostyrte skiftelokomotivet","Bestemmelsene for signalgiver gjelder bare når lokomotivet trekker vogner","Bestemmelsene for signalgiver gjelder bare ved skifting på stasjon, ikke i sidespor","Føreren følger bare bestemmelser for skifteleder, ikke signalgiver"], correct:0, explanation:"Ved radiostyrt skiftelokomotiv gjelder bestemmelsene for signalgiver tilsvarende for føreren av skiftelokomotivet. (TJN Kapittel 3, 3.2)" },
-  { id:"3-003", q:"Hvem gir tillatelse til skifting på strekning med fjernstyring?", img:null, options:["Toglederen","Togekspeditøren","Driftsoperatøren","Skiftelederen"], correct:0, explanation:"På strekning med fjernstyring gis tillatelse til skifting av toglederen. (TJN Kapittel 3, 3.3)" },
-  { id:"3-004", q:"Hvem gir tillatelse til skifting på strekning med togmelding eller på grensestasjon?", img:null, options:["Togekspeditøren","Toglederen","Driftsoperatøren","Skiftelederen"], correct:0, explanation:"På strekning med togmelding og på grensestasjon gis tillatelse til skifting av togekspeditøren. (TJN Kapittel 3, 3.3)" },
-  { id:"3-005", q:"Hvem skal lede skiftingen?", img:null, options:["Skiftelederen","Signalgiveren","Føreren alene","Toglederen"], correct:0, explanation:"Skifting skal ledes av en skifteleder. (TJN Kapittel 3, 3.4 nr. 1)" },
-  { id:"3-006", q:"Hvem er normalt skifteleder dersom ikke annet er bestemt?", img:null, options:["Føreren","Signalgiveren","Togekspeditøren","Toglederen"], correct:0, explanation:"Føreren er skifteleder med mindre annet er bestemt av jernbaneforetaket eller Bane NOR. (TJN Kapittel 3, 3.4 nr. 2)" },
-  { id:"3-007", q:"Hva skal skiftelederen gjøre før skifting starter hvis det finnes forhold av betydning for sikkerheten?", img:null, options:["Orientere dem som deltar i skiftingen om forholdene","Bare orientere føreren","Bare orientere den som betjener sikringsanlegget","Melde forholdene til togleder og avvente ny tillatelse"], correct:0, explanation:"Skiftelederen skal orientere de som deltar i skiftingen om forhold av betydning for sikkerheten. (TJN Kapittel 3, 3.4 nr. 3.1)" },
-  { id:"3-008", q:"Hva er skiftelederens ansvar når det lastes eller losses i kjøretøyene som skal skiftes?", img:null, options:["Skiftelederen skal sørge for at lasting eller lossing opphører, og at arbeidet ikke gjenopptas før beskjed er gitt","Skiftelederen skal bare kontrollere at dører og luker er lukket før bevegelse","Lasting og lossing kan fortsette dersom skiftehastigheten er svært lav","Dette avgjøres av lasteansvarlig, ikke av skiftelederen"], correct:0, explanation:"Skiftelederen skal sørge for at lasting eller lossing opphører, og at dette ikke gjenopptas før beskjed er gitt. (TJN Kapittel 3, 3.4 nr. 3.2)" },
-  { id:"3-009", q:"Hva skal skiftelederen holde seg orientert om under skifting?", img:null, options:["Toggangen og andre forhold som har betydning for skiftingen","Kun planlagte togbevegelser i sporet skiftet står i","Kun neste skiftebevegelse","Kun meldinger fra togleder eller togekspeditør"], correct:0, explanation:"Skiftelederen skal holde seg orientert om toggangen og andre forhold som har betydning for skiftingen. (TJN Kapittel 3, 3.4 nr. 3.4)" },
-  { id:"3-010", q:"Hvilket kommunikasjonsmiddel skal brukes mellom togleder og skifteleder når de kommuniserer om skifting?", img:null, options:["Togradio","Privat mobiltelefon dersom samtalen logges","Muntlig beskjed via annet personell","Intern chat eller SMS"], correct:0, explanation:"Kommunikasjon mellom togleder og skifteleder om skifting skal skje med togradio. (TJN Kapittel 3, 3.5 nr. 1)" },
-  { id:"3-011", q:"Hva gjelder på stasjoner som er utstyrt med GSM-R som skifteradio?", img:null, options:["GSM-R skifteradio skal brukes, og skiftet skal være innlogget med funksjonelt skiftnummer eller tognummer før oppstart","GSM-R skifteradio brukes bare hvis skiftet skal ut på linjen","Innlogging kan gjøres etter at første skiftebevegelse er startet","Det holder at bare skiftelederen er innlogget"], correct:0, explanation:"På stasjoner med GSM-R som skifteradio skal den brukes, og skiftet skal før oppstart være innlogget med funksjonelt skiftnummer eller tognummer. (TJN Kapittel 3, 3.5 nr. 3)" },
+  // ── GENERELLE SKIFTEREGLER SOM ER RELEVANTE FOR HSV/SIGNALGIVER ──
+  { id:"3-001", q:"Hva gjelder dersom et skift må kjøres utenfor stasjonsgrensen på strekning med fjernstyring eller togmelding?", img:null, options:["Bevegelsen skal kjøres som tog","Det kan fortsatt kjøres som skift dersom togleder eller togekspeditør samtykker","Det kan kjøres som skift dersom strekningen utenfor stasjonsgrensen er kort","Det kan kjøres som skift så lenge hastigheten holdes under 20 km/t"], correct:0, explanation:"Når et skift må kjøres utenfor stasjonsgrensen på strekning med fjernstyring eller togmelding, skal bevegelsen gjennomføres som tog. (TJN Kapittel 3, 3.1 nr. 2)" },
+  { id:"3-002", q:"Hva gjelder for et radiostyrt skiftelokomotiv når reglene omtaler signalgiver?", img:null, options:["Bestemmelsene for signalgiver gjelder tilsvarende for føreren av det radiostyrte skiftelokomotivet","Bestemmelsene for signalgiver gjelder bare når lokomotivet trekker vogner","Bestemmelsene for signalgiver gjelder bare ved skifting på stasjon, ikke i sidespor","Føreren følger bare bestemmelser for skifteleder, ikke signalgiver"], correct:0, explanation:"Ved radiostyrt skiftelokomotiv gjelder bestemmelsene for signalgiver tilsvarende for føreren av skiftelokomotivet så langt de passer. (TJN Kapittel 3, 3.2)" },
 
-  // ── STASJON, SIDESPOR OG FRIGIVING (3.7–3.12) ──
-  { id:"3-012", q:"Hvor nær stasjonsgrensen eller signal som angir skiftelengde kan et skift kjøres på en stasjon uten særskilt tillatelse?", img:null, options:["Ikke nærmere enn 20 meter","Ikke nærmere enn 50 meter","Fram til stasjonsgrensen dersom hovedsignal viser «Stopp»","Fram til signal for skiftelengde så lenge skiftet har signalgiver"], correct:0, explanation:"Skift på stasjon må ikke kjøres nærmere stasjonsgrensen eller signal som angir skiftelengde enn 20 meter. (TJN Kapittel 3, 3.7 nr. 1)" },
-  { id:"3-013", q:"Hva skal gjelde dersom det skiftes på et spor der det ventes tog?", img:null, options:["Hovedsignal eller enkelt innkjørsignal skal vise «Stopp», eller ikke være frigitt","Det holder at skiftelederen har radiokontakt med føreren i toget som ventes","Det holder at skiftet stopper før første sporveksel","Skifting er tillatt så lenge skiftet holder lav hastighet"], correct:0, explanation:"Når det skiftes på et spor der det ventes tog, skal dekningsgivende hovedsignal eller enkelt innkjørsignal vise «Stopp», eller ikke være frigitt. (TJN Kapittel 3, 3.7 nr. 2)" },
-  { id:"3-014", q:"Hva må være sikret når det skiftes inne i et sidespor?", img:null, options:["At skiftet ikke kan komme inn på blokkstrekningen","At toglederen kan overvåke sidesporet med kamera","At sidesporvekselen står i normalstilling under hele skiftingen","At skiftet har lokal sikkerhetsvakt i begge ender"], correct:0, explanation:"Ved skifting inne i sidespor skal det være sikret at skiftet ikke kan komme inn på blokkstrekningen. (TJN Kapittel 3, 3.8 nr. 1)" },
-  { id:"3-015", q:"Hvilke opplysninger skal skiftelederen oppgi ved anmodning om å skifte inn på eller ut fra et sidespor på strekning med fjernstyring?", img:null, options:["Funksjon, posisjon, togets nummer og hvilket sidespor det gjelder","Funksjon, posisjon, skiftnummer eller telefonnummer og hvilket sidespor det gjelder","Kun tognummer og ønsket retning","Kun sidespor og forventet varighet"], correct:0, explanation:"Ved anmodning om å skifte inn på eller ut fra sidespor på strekning med fjernstyring skal skiftelederen oppgi funksjon, posisjon, togets nummer og hvilket sidespor anmodningen gjelder. (TJN Kapittel 3, 3.10 nr. 2)" },
-  { id:"3-016", q:"Hva skal togekspeditøren kontrollere før stasjonen eller deler av den frigjøres for skifting på strekning med togmelding?", img:null, options:["At alle hovedsignaler, enkle innkjørsignaler og midlertidige innkjørsignaler som dekker stasjonen viser «Stopp»","At alle planoverganger på stasjonen er stengt for veitrafikk","At siste tog har passert hele strekningen mellom nabostasjonene","At alle sporveksler står i normalstilling"], correct:0, explanation:"Før frigiving skal togekspeditøren kontrollere at alle signaler som dekker stasjonen viser «Stopp», og stasjonen skal ikke frigis uten at skiftelederen har anmodet om det. (TJN Kapittel 3, 3.11-BN)" },
+  // ── SKIFTING PÅ STASJON OG I SIDESPOR ──
+  { id:"3-003", q:"Hvor langt kan et skift kjøres mot stasjonsgrensen på stasjon uten særskilt tillatelse?", img:null, options:["Ikke nærmere enn 20 meter til stasjonsgrensen, eller til eventuelt signal som begrenser skiftelengden","Ikke nærmere enn 50 meter til stasjonsgrensen, med mindre hovedsignal viser «Stopp»","Helt fram til stasjonsgrensen dersom signalgiveren ser at sporet er fritt","Fram til første sporveksel i utkjørtogveien dersom skiftet bruker skifteradio"], correct:0, explanation:"På stasjon skal det ikke skiftes nærmere stasjonsgrensen enn 20 meter, eller til eventuelt signal som begrenser skiftelengden. (TJN Kapittel 3, 3.7 nr. 1)" },
+  { id:"3-004", q:"Hva skal gjelde når det skiftes på det sporet hvor tog ventes på strekning med fjernstyring eller togmelding?", img:null, options:["Vedkommende hovedsignal eller enkelt innkjørsignal skal vise «Stopp», eller enkelt innkjørsignal skal ikke være frigitt for stilling fra utvendig stillerapparat","Det er nok at skiftet stanser før første sporveksel dersom tog blir varslet","Skifting kan fortsette så lenge skiftelederen har kontakt med togleder eller togekspeditør","Det er tilstrekkelig at innkjørhovedsignalet viser «Kjør med redusert hastighet»"], correct:0, explanation:"Når det skiftes på det sporet hvor tog ventes, skal vedkommende hovedsignal eller enkelt innkjørsignal vise «Stopp», eller enkelt innkjørsignal skal ikke være frigitt for stilling av signal fra utvendig stillerapparat. (TJN Kapittel 3, 3.7 nr. 2)" },
+  { id:"3-005", q:"Hva må være sikret ved skifting inne i et sidespor?", img:null, options:["At skiftet ikke kan komme inn på blokkstrekningen sidesporet grener ut fra","At sidesporvekselen står i normalstilling under hele skiftingen","At toglederen eller togekspeditøren har kontinuerlig visuell kontroll med sidesporet","At det alltid står personale ved sporsperren"], correct:0, explanation:"Ved skifting inne på et sidespor skal det sikres at skiftet ikke kan komme inn på den blokkstrekningen sidesporet grener ut fra. (TJN Kapittel 3, 3.8 nr. 1)" },
 
-  // ── SIGNALGIVER, SKIFTEVEI OG «SIKRINGSANLEGG BEGYNNER» (3.13) ──
-  { id:"3-017", q:"Hvilke håndsignaler kan signalgiveren gi før skiftet settes i bevegelse?", img:null, options:["Håndsignal som viser «Kjør fram» eller håndsignal som viser «Bakk»","Håndsignal som viser «Stopp» eller håndsignal som viser «Sakte»","Dvergsignal som viser «Varsom kjøring tillatt» eller «Kjøring tillatt»","Kun muntlig beskjed over radio"], correct:0, explanation:"Før skiftet settes i bevegelse skal signalgiveren gi håndsignal som viser «Kjør fram» eller håndsignal som viser «Bakk». (TJN Kapittel 3, 3.13 nr. 1)" },
-  { id:"3-018", q:"Hvem skal holde skifteveien under observasjon når skiftet er i bevegelse?", img:null, options:["Signalgiveren, eller føreren når føreren er fremst i bevegelsesretningen","Toglederen eller togekspeditøren","Skiftelederen alene","Den som betjener sikringsanlegget"], correct:0, explanation:"Skifteveien skal holdes under observasjon av signalgiveren, eller av føreren når føreren er fremst i bevegelsesretningen. (TJN Kapittel 3, 3.13 nr. 2)" },
-  { id:"3-019", q:"Hva gjelder for signalgiveren dersom skifting skjer uten skifteradio?", img:null, options:["Signalgiveren skal være synlig for føreren","Signalgiveren kan stå skjult dersom skiftelederen ser vedkommende","Signalgiveren trenger bare å være synlig ved passering av sporveksler","Det er nok at signalgiveren kan høre føreren"], correct:0, explanation:"Når skifting skjer uten skifteradio, skal signalgiveren være synlig for føreren. (TJN Kapittel 3, 3.13 nr. 2)" },
-  { id:"3-020", q:"Hva må være tydelig når signalgiver bruker skifteradio?", img:null, options:["Hvem signalene er rettet til","Hvilken radiokanal toglederen lytter på","Hvilket tognummer som sist passerte stasjonen","Hvilket håndsignal som ellers ville vært brukt"], correct:0, explanation:"Når signaler gis med skifteradio, skal det være tydelig hvem signalene er rettet til. (TJN Kapittel 3, 3.13 nr. 2)" },
-  { id:"3-021", q:"Hvem skal kontrollere at sporveksler og sporsperrer ligger riktig før skiftet passerer dem?", img:null, options:["Signalgiveren, eller føreren når føreren er fremst i bevegelsesretningen","Toglederen","Den som sist stilte sporvekselen","Togekspeditøren"], correct:0, explanation:"Signalgiveren skal kontrollere at sporveksler og sporsperrer ligger riktig før skiftet passerer dem. Er føreren fremst i bevegelsesretningen, gjelder dette føreren. (TJN Kapittel 3, 3.13 nr. 2)" },
-  { id:"3-022", q:"Hva gjelder dersom skiftet ikke har signalgiver?", img:null, options:["Føreren skal være fremst i skiftets bevegelsesretning","Skiftelederen skal alltid gå foran skiftet","Skiftet kan bare bevege seg i sidespor","Skiftet kan bare bevege seg i dagslys"], correct:0, explanation:"Når skiftet ikke har signalgiver, skal føreren være fremst i skiftets bevegelsesretning. (TJN Kapittel 3, 3.13 nr. 2)" },
-  { id:"3-023", q:"Når kan et skift passere merket «Sikringsanlegg begynner» uten å innhente ny avklaring?", img:null, options:["Når det fra etterfølgende signal er sikret togvei, eller skiftevei med dvergsignal som viser «Varsom kjøring tillatt» eller «Kjøring tillatt»","Når skiftelederen vurderer at skifteveien ser fri ut","Når skiftelederen har kontrollert nærmeste sporveksel manuelt","Når skiftet kjører med maksimalt 10 km/t"], correct:0, explanation:"Skift kan passere merket «Sikringsanlegg begynner» uten nærmere avklaring når det fra etterfølgende signal er sikret togvei, eller skiftevei med dvergsignal som viser «Varsom kjøring tillatt» eller «Kjøring tillatt». (TJN Kapittel 3, 3.13 nr. 4)" },
+  // ── SIGNALGIVING OG KONTROLL AV SKIFTEVEIEN ──
+  { id:"3-006", q:"Hvilke signaler skal signalgiveren gi før skiftet settes i bevegelse?", img:null, options:["Håndsignal 10A/10B «Kjør fram» eller håndsignal 11A/11B «Bakk»","Håndsignal «Stopp» etterfulgt av muntlig beskjed om retning","Dvergsignal som viser «Varsom kjøring tillatt» eller «Kjøring tillatt»","Muntlig ordre over radio uten håndsignal"], correct:0, explanation:"Skift skal ikke settes i bevegelse før signalgiveren har gitt signal 10A/10B «Kjør fram» eller signal 11A/11B «Bakk». (TJN Kapittel 3, 3.13 nr. 1)" },
+  { id:"3-007", q:"Hvem skal ha skifteveien under oppsikt når skiftet er i bevegelse?", img:null, options:["Signalgiveren, eller føreren dersom føreren er fremst i skiftet","Skiftelederen alene, fordi skiftelederen har overordnet ansvar","Toglederen eller togekspeditøren, fordi de har gitt tillatelse til skifting","Den som sist stilte sporvekslene i området"], correct:0, explanation:"Signalgiveren eller føreren skal ha skifteveien under oppsikt. Dersom føreren er fremst i skiftet, er det føreren som skal ha skifteveien under oppsikt. (TJN Kapittel 3, 3.13 nr. 1)" },
+  { id:"3-008", q:"Hva gjelder dersom det ikke brukes skifteradio?", img:null, options:["Signalgiveren skal være synlig for føreren","Skiftelederen skal være synlig for føreren","Det er nok at føreren kan høre signalgiveren","Signalgiveren trenger bare å være synlig ved passering av sporveksler"], correct:0, explanation:"Når det ikke brukes skifteradio, skal signalgiveren være synlig for føreren. (TJN Kapittel 3, 3.13 nr. 1)" },
+  { id:"3-009", q:"Hva må være tydelig når signaler gis med skifteradio?", img:null, options:["Hvem signalene gis til","Hvilken radiokanal skiftet bruker","Hvilket spor skiftet står i ved meldingsstart","Hvilken hovedsignalgruppe som dekker området"], correct:0, explanation:"Brukes skifteradio, skal det tydelig fremgå hvem signalene gis til. (TJN Kapittel 3, 3.13 nr. 1)" },
+  { id:"3-010", q:"Hvem skal kontrollere at sporveksler og sporsperrer ligger riktig før skiftet kjører over dem?", img:null, options:["Signalgiveren, eller føreren dersom føreren er foran i skiftet","Skiftelederen, fordi skiftelederen leder skiftingen","Toglederen eller togekspeditøren, fordi de frigjør området","Den som betjener sikringsanlegget, uansett hvor skiftet befinner seg"], correct:0, explanation:"Signalgiveren skal kontrollere at sporveksler og sporsperrer ligger riktig før skiftet kjører over dem. Dersom føreren er foran i skiftet, skal føreren kontrollere dette. (TJN Kapittel 3, 3.13 nr. 2)" },
+  { id:"3-011", q:"Hva gjelder dersom det ikke er signalgiver til å gi signal?", img:null, options:["Føreren skal være foran i skiftet i kjøreretningen","Skiftelederen skal gå foran skiftet og gi muntlige signaler","Skiftet kan bare kjøres i trekkretningen","Føreren kan være bakerst dersom skiftet bruker skifteradio"], correct:0, explanation:"Dersom det ikke er signalgiver til å gi signal, skal føreren være foran i skiftet i kjøreretningen. (TJN Kapittel 3, 3.13 nr. 3)" },
+  { id:"3-012", q:"Når kan et skift kjøre forbi signal 108 «Sikringsanlegg begynner» uten å avklare det med togleder eller togekspeditør?", img:null, options:["Når det er sikret togvei, eller skiftevei med dvergsignaler, fra etterfølgende signal","Når skiftet allerede har fått generell tillatelse til skifting på stasjonen","Når signalgiveren har kontrollert at ingen annen skiftebevegelse pågår i området","Når nærmeste hovedsignal viser «Stopp»"], correct:0, explanation:"Det kan kjøres forbi signal 108 «Sikringsanlegg begynner» dersom det er sikret togvei, eller skiftevei med dvergsignaler, fra etterfølgende signal. Hvis ikke, skal føreren avklare kjøringen med toglederen eller togekspeditøren. (TJN Kapittel 3, 3.13 nr. 4)" },
 
-  // ── FLERE SKIFTELAG OG HØYE SKIFTESIGNALER (3.14–3.15) ──
-  { id:"3-024", q:"Hva skal skiftelederne gjøre når flere skiftelag fra samme jernbaneforetak arbeider i samme område?", img:null, options:["Avtale hvordan skiftingen skal gjennomføres","Avvente særskilt skriftlig instruks fra toglederen","La det eldste skiftelaget overta ansvaret for all skifting","Overlate koordineringen til togekspeditøren"], correct:0, explanation:"Når flere skiftelag fra samme jernbaneforetak arbeider i samme område, skal skiftelederne avtale hvordan skiftingen skal gjennomføres. (TJN Kapittel 3, 3.14 nr. 1)" },
-  { id:"3-025", q:"Hva gjelder dersom to skift skal bruke samme sporveksel samtidig?", img:null, options:["Skiftet som har sporvekselen stilt riktig for seg har rett til å bruke den, og det andre skiftet skal stoppe før middel","Skiftet med færrest vogner har forrang","Skiftet som kommer fra høyre har forrang","Toglederen avgjør alltid hvilket skift som skal bruke sporvekselen først"], correct:0, explanation:"Når to skift skal bruke samme sporveksel, har skiftet som har sporvekselen stilt riktig for seg rett til å bruke den. Det andre skiftet skal stoppe før middel. (TJN Kapittel 3, 3.14 nr. 2)" },
-  { id:"3-026", q:"Hva kreves der høyt skiftesignal er satt opp for området det skal skiftes i?", img:null, options:["Skifting skal ikke foregå uten at høyt skiftesignal viser «Skifting tillatt», og dersom flere høye skiftesignaler dekker bevegelsen skal alle vise «Skifting tillatt»","Det er nok at nærmeste høye skiftesignal viser «Skifting tillatt»","«Skifting tillatt» kan erstattes av dvergsignal som viser «Kjøring tillatt» i etterfølgende område","Muntlig tillatelse fra skifteleder kan erstatte at høyt skiftesignal viser «Skifting tillatt»"], correct:0, explanation:"Der høyt skiftesignal er satt opp, skal skifting ikke foregå uten at signalet viser «Skifting tillatt». Hvis bevegelsen dekkes av flere høye skiftesignaler, skal alle samtidig vise «Skifting tillatt». (TJN Kapittel 3, 3.15 nr. 1)" },
-  { id:"3-027", q:"Hva gjelder når et skift har begynt å kjøre på høyt skiftesignal som viser «Skifting tillatt»?", img:null, options:["Signalet skal ikke tas tilbake før det er klarlagt med skiftelederen at dette kan gjøres","Signalet kan tas tilbake straks første aksel har passert signalet","Signalet kan tas tilbake når føreren bekrefter riktig sporvekselstilling","Signalet skal tas tilbake automatisk etter en fast tidsforsinkelse"], correct:0, explanation:"Når et skift har begynt å kjøre på høyt skiftesignal som viser «Skifting tillatt», skal signalet ikke tas tilbake før det er klarlagt med skiftelederen at dette kan gjøres. (TJN Kapittel 3, 3.15 nr. 1)" },
-  { id:"3-028", q:"Når er det ikke tillatt å vise «Skifting tillatt» i høyt skiftesignal?", img:null, options:["Mens sporveksler eller sporsperrer omlegges fra betjeningsanlegget, og før anlegget har kontroll i riktig stilling","Bare når det er mørkt og dårlig sikt","Når skiftet består av mer enn fem vogner","Når skiftelederen bruker skifteradio"], correct:0, explanation:"«Skifting tillatt» skal ikke vises mens sporveksler eller sporsperrer omlegges fra betjeningsanlegget, og ikke før anlegget har kontroll i riktig stilling. (TJN Kapittel 3, 3.15 nr. 2)" },
-  { id:"3-029", q:"Hva må være avtalt på forhånd før føreren kan flytte skiftet når høyt skiftesignal viser «Skifting tillatt» eller dvergsignal viser «Varsom kjøring tillatt» eller «Kjøring tillatt»?", img:null, options:["At føreren kan flytte skiftet (avtalt mellom føreren og den som betjener sikringsanlegget)","At toglederen har kontrollert nabosporene visuelt","At planoverganger i stasjonsområdet er sperret","At skiftelederen har meldt skiftet klart på togradio"], correct:0, explanation:"Føreren kan flytte skiftet når høyt skiftesignal viser «Skifting tillatt» eller dvergsignal viser «Varsom kjøring tillatt»/«Kjøring tillatt», og dette på forhånd er avtalt mellom føreren og den som betjener sikringsanlegget. (TJN Kapittel 3, 3.15 nr. 3)" },
-  { id:"3-030", q:"Hva gjelder dersom skiftet får høyt skiftesignal som viser «Skifting forbudt», dvergsignal som viser «Kjøring forbudt», eller ikke får noe signal i det hele tatt?", img:null, options:["Skiftet kan fortsette først etter tillatelse fra togleder, togekspeditør eller driftsoperatør","Skiftet kan passere signalet med særlig forsiktighet","Skiftet kan fortsette dersom skiftelederen står ved signalet","Skiftet skal trekke tilbake til forrige sporveksel og vente"], correct:0, explanation:"Hvis skiftet får «Skifting forbudt» i høyt skiftesignal, «Kjøring forbudt» i dvergsignal, eller ikke får noe signal, kan det fortsette først etter tillatelse fra togleder, togekspeditør eller driftsoperatør. (TJN Kapittel 3, 3.15 nr. 4)" }
+  // ── HØYE SKIFTESIGNALER OG DVERGSIGNALER ──
+  { id:"3-013", q:"Hva kreves der høyt skiftesignal er satt opp for området det skal skiftes i?", img:null, options:["Skifting skal ikke foregå uten at høyt skiftesignal viser signal 42 «Skifting tillatt», og alle høye skiftesignaler som dekker bevegelsen må samtidig vise dette","Det er nok at nærmeste høye skiftesignal viser signal 42 «Skifting tillatt»","Skifting kan foregå dersom dvergsignalet i neste område viser «Kjøring tillatt», selv om høyt skiftesignal viser forbud","Muntlig beskjed fra skiftelederen kan erstatte at høyt skiftesignal viser tillatelse"], correct:0, explanation:"Der høyt skiftesignal er satt opp, skal skifting i området ikke foregå uten at signal 42 «Skifting tillatt» vises. Dersom bevegelsen dekkes av flere høye skiftesignaler, skal alle samtidig vise dette. (TJN Kapittel 3, 3.15 nr. 1)" },
+  { id:"3-014", q:"Hva gjelder dersom skiftet får signal 41 «Skifting forbudt» i høyt skiftesignal, signal 43 «Kjøring forbudt» i dvergsignal, eller ikke får noe signal i det hele tatt?", img:null, options:["Skiftet kan fortsette først etter tillatelse fra togleder, togekspeditør eller driftsoperatør","Skiftet kan fortsette i lav hastighet dersom signalgiveren har kontroll på skifteveien","Skiftet kan fortsette dersom skiftelederen står ved signalet og bekrefter videre kjøring","Skiftet kan kjøre fram til neste signal og avklare der"], correct:0, explanation:"Skift som får signal 41 «Skifting forbudt» i høyt skiftesignal, signal 43 «Kjøring forbudt» i dvergsignal, eller ikke får signal, kan fortsette etter tillatelse fra toglederen, togekspeditøren eller driftsoperatøren. (TJN Kapittel 3, 3.15 nr. 4)" }
 ];
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1606,6 +1610,57 @@ const chapter9Questions = [
   { id:"9-040", q:"Hva gjelder for sporavsnittene når hovedsikkerhetsvakten melder at alle arbeider er avsluttet på strekning med akseltellere?", img:null, options:["Så langt det er mulig skal ingen sporavsnitt ha feilaktig belegg; hvis et sporavsnitt feilaktig er belagt, skal toglederen utføre forberedende resett i henhold til interne instrukser","Alle sporavsnitt skal tvangssperres til neste tog har passert","Hovedsikkerhetsvakten skal alltid selv nullstille akseltellerne med håndholdt terminal","Feilaktig belegg er uten betydning når man opphever arbeidet og bekrefter ovenfor togleder at ingen er igjen på sporet"], correct:0, explanation:"«På strekning med akseltellere, skal så langt det er mulig ingen sporavsnitt ha feilaktig belegg ... Dersom et sporavsnitt ... feilaktig har inntatt tilstanden belagt, skal toglederen utføre forberedende resett i henhold til interne instrukser.» (TJN Kapittel 9, 9.45-BN)" }
 ];
 
+const ordlydQuestions = [
+  // ── FJERNSTYRT STREKNING: OVERORDNET SIKRING ──
+  { id:"ORD-001", q:"Du er nå på fjernstyrt strekning og skal arbeide mellom Hauerseter og Sand. Hva sier togleder til HSV når strekningen Hauerseter - Sand er sperret og sikring kan iverksettes?", img:null, options:["«Strekningen Hauerseter - Sand er sperret, sikring kan iverksettes.»","«Strekningen Hauerseter - Sand er sperret til kl. 12:30, sikring kan iverksettes.»","«Sikring i orden, strekningen Hauerseter - Sand er sperret til kl. 12:30.»","«Strekningen Hauerseter - Sand er sperret, arbeidet kan starte.»"], correct:0, explanation:"Korrekt ordlyd er «Strekningen Hauerseter - Sand er sperret, sikring kan iverksettes.»" },
+  { id:"ORD-002", q:"Hva sier HSV når sikringen på Hauerseter stasjon faktisk er satt ut og dette meldes tilbake til togleder?", img:null, options:["«Sikring iverksatt.»","«Sikring i orden.»","«Sikring er satt på.»","«Sikring er på, kan arbeidet starte?»"], correct:0, explanation:"Når sikringen faktisk er etablert, er korrekt ordlyd «Sikring iverksatt.»" },
+  { id:"ORD-003", q:"Hva sier togleder når sikringen er kontrollert og Hauerseter stasjon er sperret til kl. 12:30?", img:null, options:["«Sikring i orden, Hauerseter stasjon er sperret til kl. 12:30.»","«Hauerseter stasjon er sperret til kl. 12:30, sikring i orden.»","«Sikring iverksatt, Hauerseter stasjon er sperret til kl. 12:30.»","«Hauerseter stasjon er sperret til kl. 12:30, arbeidet kan starte.»"], correct:0, explanation:"Korrekt ordlyd er «Sikring i orden, Hauerseter stasjon er sperret til kl. 12:30.»" },
+  { id:"ORD-004", q:"Hva sier HSV når togleder ikke kan bekrefte at sikringen på Hauerseter stasjon er i orden, og HSV derfor må gjennomføre sikringen selv?", img:null, options:["«Sikring iverksettes.»","«Sikring iverksatt.»","«Sikring i orden.»","«Sikring kan iverksettes.»"], correct:0, explanation:"I denne situasjonen er korrekt ordlyd «Sikring iverksettes.»" },
+
+  // ── FJERNSTYRT STREKNING: KOMMUNIKASJON MED LFS ──
+  { id:"ORD-005", q:"Du er fortsatt på Hauerseter stasjon, men spørsmålet gjelder nå kommunikasjon med LFS. Hva sier HSV når stedet er sikret og sperret, og frakobling kan iverksettes?", img:null, options:["«Hauerseter stasjon er sikret og sperret i henhold til BN-K123456 og/eller elsikkerhetsplan 12345. Du kan iverksette frakobling.»","«Hauerseter stasjon er sperret, sikring kan iverksettes. Du kan begynne frakobling.»","«Hauerseter stasjon er sperret. Du kan starte arbeidet og iverksette frakobling.»","«Hauerseter stasjon er sperret til kl. 12:30. Frakobling er mulig.»"], correct:0, explanation:"Kjernen i ordlyden er at stedet er sikret og sperret i henhold til kunngjøringsnummer og/eller elsikkerhetsplan, etterfulgt av «Du kan iverksette frakobling.»" },
+
+  // ── FJERNSTYRT STREKNING: LOKAL SIKRING OG OPPSTART AV ARBEID ──
+  { id:"ORD-006", q:"Du er fortsatt på Hauerseter stasjon, og arbeidet skal utføres med lokal sikkerhetsvakt ved spor 2. Hva sier HSV til LSV når Hauerseter stasjon er sperret til kl. 12:30 og lokal sikring kan iverksettes?", img:null, options:["«Hauerseter stasjon er sperret til kl. 12:30, sikring kan iverksettes.»","«Hauerseter stasjon er sperret, arbeidet kan starte.»","«Sikring i orden, Hauerseter stasjon er sperret til kl. 12:30.»","«Hauerseter stasjon er sperret til kl. 12:30, sikring er i orden.»"], correct:0, explanation:"Korrekt ordlyd fra HSV til LSV er «Hauerseter stasjon er sperret til kl. 12:30, sikring kan iverksettes.»" },
+  { id:"ORD-007", q:"Hva sier LSV til HSV når lokal sikring ved spor 2 på Hauerseter stasjon er satt ut?", img:null, options:["«Hauerseter stasjon er sperret til kl. 12:30, sikring ved spor 2 er iverksatt.»","«Sikring i orden, Hauerseter stasjon er sperret til kl. 12:30.»","«Arbeidet ved spor 2 på Hauerseter stasjon kan iverksettes.»","«Sikring ved spor 2 på Hauerseter stasjon er fjernet, sporet er klart for tog.»"], correct:0, explanation:"Korrekt ordlyd er «Hauerseter stasjon er sperret til kl. 12:30, sikring ved spor 2 er iverksatt.»" },
+  { id:"ORD-008", q:"Hva sier HSV til LSV når arbeidet ved spor 2 på Hauerseter stasjon kan starte?", img:null, options:["«Arbeidet ved spor 2 på Hauerseter stasjon kan iverksettes.»","«Arbeidet ved spor 2 på Hauerseter stasjon er iverksatt.»","«Sikring ved spor 2 på Hauerseter stasjon er iverksatt.»","«Spor 2 på Hauerseter stasjon er sperret.»"], correct:0, explanation:"Når lokal sikring er bekreftet, er korrekt ordlyd «Arbeidet ved spor 2 på Hauerseter stasjon kan iverksettes.»" },
+  { id:"ORD-009", q:"Hva sier HSV eller LSV til arbeidslaget når spor 2 på Hauerseter stasjon er sikret og arbeidet kan starte?", img:null, options:["«Spor 2 på Hauerseter stasjon er sikret, arbeidet kan starte.»","«Spor 2 på Hauerseter stasjon er sperret, arbeidet kan starte.»","«Arbeidet kan starte, bekreft sikret spor 2 på Hauerseter stasjon.»","«Spor 2 på Hauerseter stasjon er klart for arbeid.»"], correct:0, explanation:"Korrekt ordlyd er «Spor 2 på Hauerseter stasjon er sikret, arbeidet kan starte.»" },
+
+  // ── FJERNSTYRT STREKNING: AVSLUTNING AV ARBEID ──
+  { id:"ORD-010", q:"Arbeidet ved spor 2 på Hauerseter stasjon skal nå avsluttes. Når arbeidslaget faktisk er ferdig med å avslutte arbeidet, hvilken tilbakemelding skal de gi til deg?", img:null, options:["«Arbeidet er avsluttet.»","«Arbeidet avsluttes.»","«Klart for tog.»","«Arbeidet er ferdig.»"], correct:0, explanation:"Korrekt tilbakemelding er «Arbeidet er avsluttet.». Dette spørsmålet gjelder meldingen når arbeidet faktisk er avsluttet. «Klart for tog.» brukes senere når HSV eller LSV ber om den bekreftelsen." },
+  { id:"ORD-011", q:"Hva skal du nå si for å be arbeidslaget bekrefte at spor 2 på Hauerseter stasjon er klart for tog?", img:null, options:["«Spor 2 på Hauerseter stasjon. Arbeid avsluttet. Bekreft klart for tog.»","«Spor 2 på Hauerseter stasjon er avsluttet. Bekreft klart.»","«Arbeidet er avsluttet på spor 2 på Hauerseter stasjon. Bekreft at sperringen kan oppheves.»","«Spor 2 på Hauerseter stasjon er klart for tog. Bekreft.»"], correct:0, explanation:"Korrekt ordlyd er «Spor 2 på Hauerseter stasjon. Arbeid avsluttet. Bekreft klart for tog.»" },
+  { id:"ORD-012", q:"Hva skal arbeidslaget svare nå som bekreftelse på at spor 2 på Hauerseter stasjon er klart for tog?", img:null, options:["«Klart for tog.»","«Sporet er fritt.»","«Arbeidet er ferdig.»","«Ingen i sporet.»"], correct:0, explanation:"Korrekt tilbakemelding fra arbeidslaget er «Klart for tog.»" },
+  { id:"ORD-013", q:"Hva skal LSV si til HSV når sikringen ved spor 2 på Hauerseter stasjon er fjernet og sporet er klart for tog?", img:null, options:["«Sikring ved spor 2 på Hauerseter stasjon er fjernet, sporet er klart for tog.»","«Arbeidet ved spor 2 på Hauerseter stasjon er avsluttet, sporet er klart for tog.»","«Sikring fjernet, Hauerseter stasjon er klar for tog.»","«Sperring ved spor 2 på Hauerseter stasjon er fjernet, sporet er klart for tog.»"], correct:0, explanation:"Korrekt ordlyd fra LSV er «Sikring ved spor 2 på Hauerseter stasjon er fjernet, sporet er klart for tog.»" },
+
+  // ── TOGMELDING: HALTDALEN STASJON ──
+  { id:"ORD-014", q:"Du er nå på strekning med togmelding og befinner deg mellom Røros og Haltdalen. Hva skal HSV spørre TXP om når sikringen utføres på vegne av HSV på strekningen Røros - Haltdalen?", img:null, options:["«Er sikring iverksatt?»","«Er sperringen iverksatt?»","«Er det klart for arbeid?»","«Er strekningen klar for arbeid?»"], correct:0, explanation:"Korrekt ordlyd er «Er sikring iverksatt?»" },
+  { id:"ORD-015", q:"Hva sier TXP på Haltdalen stasjon når sikringen er iverksatt og strekningen Røros - Haltdalen er sperret til kl. 10:15?", img:null, options:["«Sikring iverksatt, strekningen Røros - Haltdalen er sperret til kl. 10:15.»","«Sikring i orden, strekningen Røros - Haltdalen er sperret til kl. 10:15.»","«Strekningen Røros - Haltdalen er sperret til kl 10:15.»","«Sikring er ordnet, strekningen Røros - Haltdalen er klar for arbeid.»"], correct:0, explanation:"Korrekt ordlyd er «Sikring iverksatt, strekningen Røros - Haltdalen er sperret til kl. 10:15.»" },
+
+  // ── GENERELLE REGLER: OPPSTART AV SAMTALE ──
+  { id:"ORD-016", q:"Du går nå over til generelle regler for muntlig sikkerhetskommunikasjon. Hva skal den som mottar et anrop gjøre først ved oppstart av samtalen?", img:null, options:["Umiddelbart presentere seg selv med funksjon og ID","Presentere seg selv med navn og deretter vente på flere opplysninger","Be motparten oppgi sak og posisjon først","Lese tilbake motpartens funksjon og ID først"], correct:0, explanation:"Den som mottar et anrop, skal umiddelbart presentere seg selv med funksjon og ID. Kilde: Vedlegg 1, V1.4 pkt. 2 a." },
+  { id:"ORD-017", q:"Hva skal den som iverksetter et anrop gjøre i starten av samtalen?", img:null, options:["Lese tilbake motpartens funksjon og ID, og deretter presentere seg med egen funksjon og ID","Presentere seg med egen funksjon og ID uten å lese tilbake noe","Bare oppgi egen funksjon og posisjon","Be motparten vente, og deretter presentere seg"], correct:0, explanation:"Den som iverksetter et anrop, skal lese tilbake motpartens funksjon og ID og deretter presentere seg med egen funksjon og ID. Kilde: Vedlegg 1, V1.4 pkt. 2 b." },
+
+  // ── GENERELLE REGLER: TILBAKELESING OG KONTROLL ──
+  { id:"ORD-018", q:"Hva skal alltid leses tilbake av mottakeren i muntlig sikkerhetsrelatert kommunikasjon?", img:null, options:["Alle muntlige kunngjøringer, tillatelser, signaler og beskjeder om skifteveier","Bare muntlige tillatelser og kunngjøringer","Bare signaler og beskjeder om skifteveier","Bare det avsenderen uttrykkelig ber om å få lest tilbake"], correct:0, explanation:"Alle muntlige kunngjøringer, tillatelser, signaler og beskjeder om skifteveier skal leses tilbake av mottakeren. Kilde: Vedlegg 1, V1.4 pkt. 3 a." },
+  { id:"ORD-019", q:"Hva er avsenderens ansvar dersom tilbakelesningen ikke blir utført tilfredsstillende?", img:null, options:["Be mottakeren gjenta tilbakelesningen til den blir korrekt","Avslutte samtalen og ringe opp igjen","Gjenta meldingen én gang til uten videre kontroll","Nøye seg med at hovedinnholdet er oppfattet"], correct:0, explanation:"Avsenderen skal kontrollere tilbakelesningen og be mottakeren gjenta den til den blir korrekt. Kilde: Vedlegg 1, V1.4 pkt. 3 b-c." },
+  { id:"ORD-020", q:"Hvilke uttrykk brukes for å kontrollere om tilbakelesningen er riktig eller feil?", img:null, options:["«korrekt» når tilbakelesningen er riktig, og «feil» når den ikke er riktig","«mottatt» når tilbakelesningen er riktig, og «feil» når den ikke er riktig","«korrekt» når meldingen er sendt, og «gjenta» når den er feil","«bekreftet» når tilbakelesningen er riktig, og «rettelse» når den er feil"], correct:0, explanation:"«korrekt» brukes når tilbakelesningen er riktig, og «feil» brukes når den ikke er riktig. Kilde: Vedlegg 1, V1.6 pkt. 3." },
+
+  // ── GENERELLE REGLER: STANDARDUTTRYKK ──
+  { id:"ORD-021", q:"Hvilket uttrykk er minimumskravet for å erkjenne en melding?", img:null, options:["«mottatt»","«bekreftet»","«forstått»","«korrekt»"], correct:0, explanation:"Alle meldinger skal som et minimum erkjennes med uttrykket «mottatt». Kilde: Vedlegg 1, V1.6 pkt. 1." },
+  { id:"ORD-022", q:"Hvilket uttrykk brukes for å be motparten repetere, eventuelt supplert med «snakk sakte» eller «snakk tydelig»?", img:null, options:["«gjenta»","«repeter»","«prøv igjen»","«ikke helt»"], correct:0, explanation:"Uttrykket «gjenta» brukes for å be motparten repetere. Kilde: Vedlegg 1, V1.6 pkt. 2." },
+  { id:"ORD-023", q:"Hvilken ordlyd brukes når avsenderen gjentar hele eller deler av en melding, kunngjøring eller tillatelse?", img:null, options:["«jeg gjentar»","«gjenta»","«rettelse»","«opphev»"], correct:0, explanation:"Ved repetisjon av hele eller deler av en informasjonsmelding, kunngjøring eller tillatelse skal ordlyden «jeg gjentar» brukes. Kilde: Vedlegg 1, V1.6 pkt. 4." },
+  { id:"ORD-024", q:"Hvilket uttrykk skal brukes dersom avsenderen selv oppdager en feil underveis i samtalen?", img:null, options:["«rettelse»","«feil»","«opphev»","«prøver igjen»"], correct:0, explanation:"Dersom avsenderen selv oppdager en feil underveis i samtalen, skal samtalen avbrytes med uttrykket «rettelse». Kilde: Vedlegg 1, V1.6 pkt. 5." },
+  { id:"ORD-025", q:"Hvilke uttrykk brukes for å be motparten se bort fra en kunngjøring eller tillatelse?", img:null, options:["«opphev» eller «annuller»","«rettelse» eller «feil»","«hold linjen» eller «vent»","«slutt» eller «over» og deretter ringe opp igjen."], correct:0, explanation:"For å be motparten se bort fra en kunngjøring eller tillatelse skal uttrykket «opphev» eller «annuller» brukes. Kilde: Vedlegg 1, V1.6 pkt. 6." },
+  { id:"ORD-026", q:"Hvilke uttrykk brukes for å be motparten vente på informasjon, tillatelse eller instruks?", img:null, options:["«vent» eller «avvent»","«hold linjen» eller «slutt»","«mottatt» eller «bekreft»","«opphev» eller «annuller»"], correct:0, explanation:"Uttrykkene «vent» eller «avvent» brukes for å be motparten vente på informasjon, tillatelse eller instruks. Kilde: Vedlegg 1, V1.6 pkt. 7." },
+  { id:"ORD-027", q:"Hvilken ordlyd brukes for å be motparten om ikke å avbryte anropet?", img:null, options:["«hold linjen»","«vent»","«over»","«bare vent litt, jeg skal bare..»"], correct:0, explanation:"Ordlyden «hold linjen» skal brukes for å be motparten om ikke å avbryte anropet. Kilde: Vedlegg 1, V1.6 pkt. 8." },
+  { id:"ORD-028", q:"Hvilke ordlyder brukes for å avtale en ny samtale?", img:null, options:["«Jeg ringer tilbake» eller «Du ringer tilbake», der sistnevnte følges av beskjed om når motparten skal ta kontakt","«Hold linjen» eller «Vent», avhengig av hvem som skal ringe opp igjen","«Over» eller «Slutt», avhengig av om samtalen er sikkerhetsrelatert","«Jeg kommer tilbake» eller «Du kommer tilbake», der sistnevnte følges av klokkeslett"], correct:0, explanation:"Ny samtale avtales med «Jeg ringer tilbake» eller «Du ringer tilbake». Ved sistnevnte skal det opplyses når motparten skal ta kontakt. Kilde: Vedlegg 1, V1.6 pkt. 9." },
+  { id:"ORD-029", q:"Hvilken ordlyd brukes når det er behov for å markere at samtalen skal avsluttes?", img:null, options:["«Slutt»","«Over, ferdig»","Man sier ikke noe, man legger bare på","«Mottatt, snakkes»"], correct:0, explanation:"Når det er behov for å markere at samtalen skal avsluttes, skal ordlyden «Slutt» brukes. Kilde: Vedlegg 1, V1.6 pkt. 10." },
+  { id:"ORD-030", q:"Hvilket uttrykk skal brukes i alle nødanrop og gruppeanrop på togradio for å vise at ordet gis videre?", img:null, options:["«over»","«slutt»","«mottatt»","«korrekt»"], correct:0, explanation:"I alle nødanrop og gruppeanrop på togradio skal uttrykket «over» brukes for å indikere at ordet gis videre. Kilde: Vedlegg 1, V1.6 pkt. 11." },
+
+  // ── GENERELLE REGLER: UTTALE OG TALL ──
+  { id:"ORD-031", q:"Du går nå over til uttale og tall på togradio. Hvordan skal signalets bokstav og stedskode uttales når de oppgis over togradio?", img:null, options:["Ved bruk av det fonetiske alfabetet, mens signalnummeret uttales siffer for siffer","Som vanlig bokstavering, mens signalnummeret uttales siffer for siffer","Ved bruk av det fonetiske alfabetet, mens signalnummeret uttales som ordinære tall","Som stedets navn og signalets funksjon, mens signalnummeret kan utelates"], correct:0, explanation:"Signalets bokstav og stedskode skal uttales ved bruk av det fonetiske alfabetet, og signalets nummer skal uttales siffer for siffer. Kilde: Vedlegg 1, V1.3 pkt. 2." },
+  { id:"ORD-032", q:"Hva er hovedregelen for å lese tall i muntlig kommunikasjon, og hva heter desimalskillet?", img:null, options:["Tall skal leses siffer for siffer, og desimaler angis med ordet «komma»","Tall skal leses som hele tall, og desimaler angis med ordet «punktum»","Tall skal leses siffer for siffer, og desimaler angis med ordet «desimal»","Tall skal leses som vanlig tale, og desimaler kan utelates dersom sammenhengen er tydelig"], correct:0, explanation:"Tall skal leses siffer for siffer, og desimaler angis med ordet «komma». Kilde: Vedlegg 1, V1.10 pkt. 1." }
+];
 /* ═══════════════════════════════════════════════════════════════
    CHAPTER DEFINITIONS
    ═══════════════════════════════════════════════════════════════ */
@@ -1614,94 +1669,53 @@ const chapters = [
   {
     id: "kap8",
     label: "Kap. 8",
-    title: "Kapittel 8 – Signaler og skilt",
-    subtitle: "Lyssignaler, signalskilt, håndsignaler, togsignaler",
-    totalQuestions: 109,
+    title: "Kapittel 8",
+    subtitle: "Signaler og skilt",
+    totalQuestions: 113,
     quizSize: 40,
     randomize: true,
     questions: chapter8Questions,
     topics: [
       "Signalfargenes grunnbetydning og generelle regler",
-      "Hovedsignaler: innkjørhovedsignal, utkjørhovedsignal, blokksignal",
-      "Forsignaler og repetérsignaler",
-      "Dvergsignaler og sporvekselsignaler",
-      "Planovergangssignal og rasvarsling",
-      "Kontaktledningssignaler og hastighetssignaler",
-      "Skilt og orienteringsstolper langs sporet",
-      "Håndsignaler og togfløytesignaler"
+      "Signaler",
+      "Skilt",
+      "Togfløytesignaler"
     ]
   },
   {
     id: "kap1",
     label: "Kap. 1",
-    title: "Kapittel 1 – Generelle bestemmelser og definisjoner",
-    subtitle: "Virkeområde, definisjoner, grunnleggende prinsipper",
-    totalQuestions: 40,
-    quizSize: 40,
+    title: "Kapittel 1",
+    subtitle: "Generelle bestemmelser og definisjoner",
+    totalQuestions: 0,
+    quizSize: 0,
     randomize: true,
     questions: chapter1Questions,
     topics: [
-      "TJNs virkeområde og hvem den gjelder for",
-      "Sentrale definisjoner: tog, skift, stasjon, linje, togvei",
-      "Romblokkprinsippet og grunnleggende driftsprinsipper",
-      "Roller: togleder, togekspeditør, fører, HSV, signalgiver",
-      "ERTMS-bestemmelser og TSI-OPE"
+    
     ]
   },
   {
     id: "kap3",
     label: "Kap. 3",
-    title: "Kapittel 3 – Skifting",
-    subtitle: "Tillatelser, skifteleder/signalgiver, skiftevei og skiftesignaler",
-    totalQuestions: 30,
-    quizSize: 30,
+    title: "Kapittel 3",
+    subtitle: "Skifting",
+    totalQuestions: 14,
+    quizSize: 14,
     randomize: true,
     questions: chapter3Questions,
     topics: [
-      "Tillatelser, skifteleder og kommunikasjon med trafikkstyringen",
-      "Frigiving av stasjon og sidespor",
-      "Signalgiverens oppgaver og kontroll av skiftevei",
-      "Merket «Sikringsanlegg begynner», høye skiftesignaler og dvergsignaler",
-      "Koordinering mellom flere skiftelag"
-    ]
-  },
-  {
-    id: "kap5",
-    label: "Kap. 5",
-    title: "Kapittel 5 – Trafikkstyring",
-    subtitle: "Togledelse, togekspedisjon, kryssinger og ordrer (under utvikling)",
-    totalQuestions: 0,
-    quizSize: 40,
-    randomize: true,
-    questions: [],
-    topics: [
-      "Toglederens ansvar og myndighet",
-      "Togvei, kryssinger og forbikjøring",
-      "Kjøretillatelse og ordrer via formular",
-      "Strekning med fjernstyring vs. togmelding"
-    ]
-  },
-  {
-    id: "kap6",
-    label: "Kap. 6",
-    title: "Kapittel 6 – Kjøring av tog",
-    subtitle: "Regler for fører under togframføring (under utvikling)",
-    totalQuestions: 0,
-    quizSize: 40,
-    randomize: true,
-    questions: [],
-    topics: [
-      "Førerens ansvar og plikter",
-      "Hastighetsregler og bremsing",
-      "Avgang, kjøring og ankomst",
-      "Hjelpelokomotiv og flere trekkraftkjøretøy"
+      "Generelle skifteregler som HSV og signalgiver bør kjenne",
+      "Skifting på stasjon og i sidespor",
+      "Signalgiverens oppgaver og kontroll av skifteveien",
+      "Signal 108 «Sikringsanlegg begynner», høye skiftesignaler og dvergsignaler"
     ]
   },
   {
     id: "kap9",
     label: "Kap. 9",
-    title: "Kapittel 9 – Arbeid i spor",
-    subtitle: "Hovedsikkerhetsvakt, anleggsområde-jernbane, sikring og avslutning",
+    title: "Kapittel 9",
+    subtitle: "Arbeid i spor",
     totalQuestions: 40,
     quizSize: 40,
     randomize: true,
@@ -1713,7 +1727,25 @@ const chapters = [
       "Anleggsområde-jernbane, sikkerhetssoner og signal 105A/105B",
       "Avslutning av arbeid og oppheving av sikring"
     ]
+  },
+  {
+    id: "ordlyd",
+    label: "Ordlyd",
+    title: "Ordlyd",
+    subtitle: "Ordlyder som skal brukes i kommunikasjon",
+    totalQuestions: 32,
+    quizSize: 32,
+    randomize: false,
+    questions: ordlydQuestions,
+    topics: [
+      "Ordlyd mellom hovedsikkerhetsvakt og togleder/togekspeditør",
+      "Ordlyd mellom hovedsikkerhetsvakt og lokal sikkerhetsvakt",
+      "Ordlyd mellom HSV/LSV og arbeidslaget",
+      "Ordlyd mellom HSV og LFS"
+    ]
   }
+  
+  
 ];
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1726,10 +1758,16 @@ let state = {
   currentIndex: 0,
   score: 0,
   answers: [], // {questionIndex, selectedOption, isCorrect}
-  answered: false
+  answered: false,
+  quizMode: 'standard'
 };
 
 const THEME_STORAGE_KEY = 'hsv-theme';
+let pendingChapterWarningAction = null;
+
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
 
 function applyTheme(theme) {
   const useDark = theme === 'dark';
@@ -1765,10 +1803,10 @@ document.addEventListener('keydown', function(e) {
       typedKeys = ''; // Nullstill minnet
       
       if (!isAdmin) {
-        const passord = prompt('Skriv inn admin-passord for å låse opp Puggemodus:');
+        const passord = prompt('Skriv inn admin-passord for admin-tilgang:');
         if (passord === 'sudojohnas0088') {
           isAdmin = true;
-          alert('Admin-tilgang aktivert! Puggemodus er nå tilgjengelig.');
+          alert('Admin-tilgang aktivert!');
           
           // Oppdaterer skjermen med en gang slik at knappen dukker opp
           const activeTab = document.querySelector('.tab-btn.active');
@@ -1782,6 +1820,50 @@ document.addEventListener('keydown', function(e) {
     }
   }
 });
+
+function isChapterPubliclyOpen(chapterId) {
+  return ['kap8', 'kap9', 'ordlyd'].includes(chapterId);
+}
+
+function shouldShowChapterWarning(chapterId) {
+  return ['kap3', 'kap9', 'ordlyd'].includes(chapterId);
+}
+
+function getChapterUnavailableText(chapterId) {
+  return 'Kommer snart';
+}
+
+function openChapterWarningModal(onConfirm) {
+  const modal = document.getElementById('chapterWarningModal');
+  if (!modal) return;
+  pendingChapterWarningAction = onConfirm;
+  modal.classList.add('active');
+}
+
+function canAccessChapter(chapterId) {
+  return isChapterPubliclyOpen(chapterId) || isAdmin;
+}
+
+function updatePuggeScreen(chapterId) {
+  const puggeScreen = document.getElementById('puggeScreen');
+  if (!puggeScreen) return;
+
+  const currentChapter = chapters.find(c => c.id === chapterId);
+  const hasQuestions = currentChapter && currentChapter.questions.length > 0;
+  const buttons = [];
+
+  if (chapterId === 'kap8') {
+    buttons.push('<button class="btn-pugge" onclick="startFullChapterQuiz()">Ta alle spørsmål i dette kapittelet i tilfeldig rekkefølge</button>');
+  }
+
+  if (isAdmin && hasQuestions) {
+    buttons.push('<button class="btn-pugge" onclick="startAdminQuiz()">Admin quiz: alle spørsmål i rekkefølge</button>');
+  }
+
+  puggeScreen.innerHTML = buttons.join('');
+  puggeScreen.style.display = buttons.length > 0 ? 'flex' : 'none';
+}
+
 // ── Build Tabs ──
 function buildTabs() {
   const header = document.getElementById('tabsHeader');
@@ -1805,6 +1887,8 @@ function buildTabs() {
 
     const questionCount = Array.isArray(ch.questions) ? ch.questions.length : 0;
     const available = questionCount > 0;
+    const publicOpen = isChapterPubliclyOpen(ch.id);
+    const canStart = publicOpen && available;
     card.innerHTML = `
       <div class="chapter-info">
         <h2>${ch.title}</h2>
@@ -1819,19 +1903,19 @@ function buildTabs() {
             <div class="value">${available ? ch.quizSize : '—'}</div>
           </div>
           <div class="stat">
-            <div class="label">${ch.randomize ? 'Tilfeldig utvalg' : 'Fast rekkefølge'}</div>
+            <div class="label">${ch.randomize ? 'Tilfeldig utvalg' : 'Tilfeldig utvalg'}</div>
             <div class="value">${ch.randomize ? 'Ja' : 'Nei'}</div>
           </div>
         </div>
         <ul class="topic-list">
           ${ch.topics.map(t => `<li>${t}</li>`).join('')}
         </ul>
-        ${ch.id === 'kap8' ? `
+        ${canStart ? `
         <div class="chapter-actions">
           <button class="btn-start" onclick="startQuiz('${ch.id}')">Start quiz →</button>
         </div>
         ` : `
-        <button class="btn-start disabled">Kommer snart, spørsmål må kontrolleres</button>
+        <button class="btn-start disabled">${getChapterUnavailableText(ch.id)}</button>
         `}
       </div>
     `;
@@ -1842,21 +1926,7 @@ function buildTabs() {
 function switchTab(id) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.id === id));
   document.querySelectorAll('.chapter-card').forEach(c => c.classList.toggle('active', c.id === 'tab-' + id));
-  
-  const puggeScreen = document.querySelector('.puggescreen');
-  
-  if (puggeScreen) {
-    // Finn ut om kapittelet vi ser på faktisk har spørsmål i databasen
-    const currentChapter = chapters.find(c => c.id === id);
-    const hasQuestions = currentChapter && currentChapter.questions.length > 0;
-
-    // Vis knappen hvis vi er på Kapittel 8, ELLER hvis du er admin og kapittelet har innhold
-    if (id === 'kap8' || (isAdmin && hasQuestions)) {
-      puggeScreen.style.display = 'block'; 
-    } else {
-      puggeScreen.style.display = 'none';  
-    }
-  }
+  updatePuggeScreen(id);
 }
 
 // ── Shuffle ──
@@ -1884,20 +1954,28 @@ function randomizeQuestionOptions(question) {
 }
 
 // ── Start Quiz ──
-function startQuiz(chapterId, puggeMode = false) {
+function startQuiz(chapterId, quizMode = 'standard', skipChapterWarning = false) {
   const ch = chapters.find(c => c.id === chapterId);
   if (!ch || ch.questions.length === 0) return;
+  if (!canAccessChapter(chapterId)) return;
+  if (quizMode === 'full-random' && chapterId !== 'kap8') return;
+  if (quizMode === 'standard' && !skipChapterWarning && shouldShowChapterWarning(chapterId)) {
+    openChapterWarningModal(() => startQuiz(chapterId, 'standard', true));
+    return;
+  }
 
   state.currentChapter = ch;
-  state.puggeMode = puggeMode;
+  state.quizMode = quizMode;
   state.currentIndex = 0;
   state.score = 0;
   state.answers = [];
   state.answered = false;
 
   let selectedQuestions = [];
-  if (puggeMode) {
-    selectedQuestions = [...ch.questions]; // All questions in order
+  if (quizMode === 'admin-ordered') {
+    selectedQuestions = [...ch.questions];
+  } else if (quizMode === 'full-random') {
+    selectedQuestions = shuffle(ch.questions);
   } else if (ch.randomize) {
     selectedQuestions = shuffle(ch.questions).slice(0, ch.quizSize);
   } else {
@@ -1906,7 +1984,7 @@ function startQuiz(chapterId, puggeMode = false) {
 
   // Randomiserer alternativene, men lagrer dem trygt i state-objektet
   state.quizQuestions = selectedQuestions.map(q => {
-    if (ch.randomize) {
+    if (quizMode !== 'admin-ordered' && ch.randomize) {
       return randomizeQuestionOptions(q);
     }
     // Kopierer over hvis vi ikke randomiserer, for å sikre at logikken er stabil
@@ -1922,12 +2000,23 @@ function startQuiz(chapterId, puggeMode = false) {
   renderQuestion();
 }
 
-// ── Start Pugge Quiz ──
-function startPuggeQuiz() {
+// ── Start Full Chapter Quiz ──
+function startFullChapterQuiz() {
   const activeTab = document.querySelector('.tab-btn.active');
   if (!activeTab) return;
   const chapterId = activeTab.dataset.id;
-  startQuiz(chapterId, true);
+  if (chapterId !== 'kap8') return;
+  startQuiz(chapterId, 'full-random', true);
+}
+
+// ── Start Admin Quiz ──
+function startAdminQuiz() {
+  const activeTab = document.querySelector('.tab-btn.active');
+  if (!activeTab || !isAdmin) return;
+  const chapterId = activeTab.dataset.id;
+  const ch = chapters.find(c => c.id === chapterId);
+  if (!ch || ch.questions.length === 0) return;
+  startQuiz(chapterId, 'admin-ordered', true);
 }
 
 // ── Render Question ──
@@ -2159,7 +2248,7 @@ function showResults() {
       </div>
       <p class="percent-text">Kravgrense: 80% (${Math.ceil(total * 0.8)} av ${total} spørsmål)</p>
       <div class="result-actions">
-        <button class="btn-start" onclick="startQuiz('${state.currentChapter.id}', ${state.puggeMode})">Prøv igjen →</button>
+        <button class="btn-start" onclick="startQuiz('${state.currentChapter.id}', '${state.quizMode}', true)">Prøv igjen →</button>
         <button class="btn-review" onclick="showReview()">Se gjennomgang</button>
         <button class="btn-review" onclick="backToStart()">Tilbake til start</button>
       </div>
@@ -2224,6 +2313,8 @@ function backToStart() {
 document.addEventListener('DOMContentLoaded', function() {
   const modal = document.getElementById('initialModal');
   const modalButton = document.getElementById('modalButton');
+  const chapterWarningModal = document.getElementById('chapterWarningModal');
+  const chapterWarningButton = document.getElementById('chapterWarningButton');
   const themeToggle = document.getElementById('themeToggle');
 
   applyTheme(getInitialTheme());
@@ -2236,6 +2327,17 @@ document.addEventListener('DOMContentLoaded', function() {
     modal.classList.remove('active');
   });
 
+  if (chapterWarningButton && chapterWarningModal) {
+    chapterWarningButton.addEventListener('click', function() {
+      chapterWarningModal.classList.remove('active');
+      if (typeof pendingChapterWarningAction === 'function') {
+        const nextAction = pendingChapterWarningAction;
+        pendingChapterWarningAction = null;
+        nextAction();
+      }
+    });
+  }
+
   if (themeToggle) {
     themeToggle.addEventListener('click', function() {
       const isDark = document.body.classList.contains('dark-mode');
@@ -2246,8 +2348,19 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
+window.addEventListener('load', function() {
+  window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+});
+
+window.addEventListener('pageshow', function() {
+  window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+});
+
 // ── Init ──
 buildTabs();
+if (chapters.length > 0) {
+  switchTab(chapters[0].id);
+}
 </script>
 </body>
 </html>
