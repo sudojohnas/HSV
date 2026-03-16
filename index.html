@@ -1736,6 +1736,7 @@ const chapters = [
     totalQuestions: 32,
     quizSize: 32,
     randomize: false,
+    randomizeOptions: true,
     questions: ordlydQuestions,
     topics: [
       "Ordlyd mellom hovedsikkerhetsvakt og togleder/togekspeditør",
@@ -1984,7 +1985,8 @@ function startQuiz(chapterId, quizMode = 'standard', skipChapterWarning = false)
 
   // Randomiserer alternativene, men lagrer dem trygt i state-objektet
   state.quizQuestions = selectedQuestions.map(q => {
-    if (quizMode !== 'admin-ordered' && ch.randomize) {
+    const shouldRandomizeOptions = quizMode !== 'admin-ordered' && (ch.randomizeOptions ?? ch.randomize);
+    if (shouldRandomizeOptions) {
       return randomizeQuestionOptions(q);
     }
     // Kopierer over hvis vi ikke randomiserer, for å sikre at logikken er stabil
